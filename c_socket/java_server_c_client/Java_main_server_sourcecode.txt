@@ -1,0 +1,31 @@
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Servermain {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		try {
+			ServerSocket socket = new ServerSocket(9999);
+			Socket s1 = socket.accept();
+			System.out.println("클라이언트 접속");
+			
+			Receive rec = new Receive();
+			rec.so(s1);
+			
+			Send sen = new Send();
+			sen.so(s1);
+			
+			rec.start();
+			sen.start();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+}
