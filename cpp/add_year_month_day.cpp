@@ -42,7 +42,7 @@ int main(void)
         date.ShowDate();
     }
     
-    for(;;)
+    while(1)
     {
         int choose;
         cout << endl;
@@ -51,6 +51,13 @@ int main(void)
         cout << "3. 날짜 증가" << endl;
         cout << "증가시킬 항목을 선택해주세요 : ";
         cin >> choose;
+
+        if(choose < 1 || choose > 3)
+        {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
 
         switch(choose)
         {
@@ -72,6 +79,7 @@ int main(void)
                     break;
             default: cout << endl;
                      cout << "목록에 있는 1, 2, 3 중에 선택해주세요." << endl;
+                     break;
         }
     }
 
@@ -238,11 +246,6 @@ void Date::AddMonth(int inc) // 월 증가
                 month_ += inc;
         }
     }
-
-    /*
-        else
-        month_ += inc; // 출력으로 쓰일 변수에 실제 값 저장
-    */
 
     if(month_ > 12) 
     {
