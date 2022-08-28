@@ -36,9 +36,9 @@ create table bbs (
 	doc_idx bigint(20) NOT NULL AUTO_INCREMENT,
 	member_idx bigint(20) NOT NULL,
 	writer varchar(40) NOT NULL,
-  subject varchar(60) NULL,
-  content text NULL,
-  reg_date int(10) NULL,
+  	subject varchar(60) NULL,
+  	content text NULL,
+  	reg_date int(10) NULL,
 	views int(10) NULL default 0,
 ) default character set utf8 collate utf8_general_ci;
 ```
@@ -150,16 +150,16 @@ select * from bbs where 1 order by doc_idx desc limit 0, 5;
 
 [alter로 auto_increment 초기화](https://m.blog.naver.com/dldudcks1779/222006115309)
 
-[<li> 태그 등을 가로로 배열하기](https://blog.outsider.ne.kr/111)
+[li 태그 등을 가로로 배열하기](https://blog.outsider.ne.kr/111)
 
-[<input> 태그 무조건 입력받도록 하고 포커싱하기](https://gogogameboy.tistory.com/99)
+[input 태그 무조건 입력받도록 하고 포커싱하기](https://gogogameboy.tistory.com/99)
 
-[<input> 태그 크기 조절](https://dasima.xyz/html-input-text-size/)
+[input 태그 크기 조절](https://dasima.xyz/html-input-text-size/)
 
-[<table> 태그 layout 콘텐츠 내용에 따라 셀 너비 지정하기](https://devjhs.tistory.com/642)
+[table 태그 layout 콘텐츠 내용에 따라 셀 너비 지정하기](https://devjhs.tistory.com/642)
 
-[<div> 영역 밖과 안쪽에 여백주기](https://ojji.wayful.com/2013/12/HTML-DIV-to-Space-Inside-and-Outside-div-block.html)
+[div 태그 영역 밖과 안쪽에 여백주기](https://ojji.wayful.com/2013/12/HTML-DIV-to-Space-Inside-and-Outside-div-block.html)
 
-[<div> 태그 마스터](https://lifeblog.co.kr/1648/)
+[div 태그 마스터](https://lifeblog.co.kr/1648/)
 
 ---
