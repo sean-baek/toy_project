@@ -3,6 +3,25 @@
 ---
 
 ## C
--> c언어로 만들어진 프로그램의 코드가 담겨있습니다.
+> socket
+-> calculate
+-> java_server_c_client
+-> readNwritefile
+
+> systemhacking
+->BufferOverFlowAttack.c
+
+---
+
+## MagicMirror
+
+---
+
+## apm_notice_board
+-> apache, php, mysql 웹 게시판
+
+---
+
+## sqli.bat
 
 ---
