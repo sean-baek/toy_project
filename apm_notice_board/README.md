@@ -94,7 +94,7 @@ P .mem {}      --> <P>태그안의 모든 mem이라는 class를 가진 태그들
 .ttt tr.www td {}       --> ttt라는 테이블안의 www라는 tr안의 td
 ```
 
-> <table> 태그에서 칸과 칸 사이에 공백을 없앨 때 css 속성
+> table 태그에서 칸과 칸 사이에 공백을 없앨 때 css 속성
 ```html
 border-collapse: collapse;
 ```
@@ -117,13 +117,13 @@ show table status where name = '[테이블명]';
 ```
 
 > list 내의 글들을 가장 오래전에 쓴 것부터 보이게 할 때
-	```sql
-	select * from bbs where 1 order by doc_idx limit 0, 5;
-	```
+```sql
+select * from bbs where 1 order by doc_idx limit 0, 5;
+```
 > list 내의 글들을 가장 최근에 쓴 것부터 보이게 할 때
-	```sql
-	select * from bbs where 1 order by doc_idx desc limit 0, 5;
-	```
+```sql
+select * from bbs where 1 order by doc_idx desc limit 0, 5;
+```
 ---
 
 # 참고 url
