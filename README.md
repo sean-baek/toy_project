@@ -1,14 +1,11 @@
 # C
-> socket
->   > 
-```
-calculate
-java_server_c_client,
-readNwritefile
-```
+- socket
+> calculate
+> java_server_c_client,
+> readNwritefile
 
-> systemhacking
->   > BufferOverFlowAttack.c
+- systemhacking
+> BufferOverFlowAttack.c
 
 ---
 
