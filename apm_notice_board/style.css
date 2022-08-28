@@ -1,0 +1,240 @@
+@charset "utf-8";
+
+/*
+h1
+{
+    height:40;
+    float:center;
+    background-color:#3C3C3C;
+    font-size:25px;
+    text-align:center;
+    color:white;
+    margin-top:15px;
+    margin-bottom:15px"
+}
+*/
+.header
+{
+    border: 4px soild #c1c1c1;
+    margin-bottom: 20px;
+}
+
+.content
+{
+    border: 4px soild #0FF;
+}
+
+.footer
+{
+    border: 4px soild #c1c1c1;
+    margin-top: 20px;
+}
+
+.IndexDivStyle
+{
+    width: 80px;
+    height: 30px;
+    border:1px solid black;
+    float:left;
+    margin-right:20px;
+}
+
+.ListDivStyle
+{
+    width: 100px;
+    height: 30px;
+    border:1px solid black;
+    float:left;
+    margin-right:20px;
+}
+
+.WriteDivStyle
+{
+    width: 100px;
+    height: 30px;
+    border:1px solid black;
+    float:left;
+    margin-right:20px;
+}
+
+.ViewDivStyle
+{
+    width: 80px;
+    height: 30px;
+    border:1px solid black;
+    float:left;
+    margin-right:20px;
+}
+
+
+.a_tag_style
+{
+    width: 80px;
+    height: 30px;
+    border:1px solid black;
+    float:left;
+    margin-right:20px;
+}
+
+.ListTableStyle
+{
+    width:100%;
+    height: inherit; 
+    border: 1px solid #444444;
+    border-collapse: collapse;
+
+}
+
+.ListTrStyle
+{
+    border:1px solid #bcbcbc;
+}
+
+.ListThStyle
+{
+    background-color: #222;
+    color: #fff;
+    text-align:center;
+    border: 1px solid #bcbcbc;
+}
+
+.ListTdStyle
+{
+    text-align:center;
+    border: 1px solid #bcbcbc;
+}
+
+.ListUlStyle
+{
+    list-style:none;
+    margin:10px;
+    padding:10px;
+}
+
+.ListLiStyle
+{
+    margin: 0 0 0 0;
+    padding: 5px;
+    border : 0;
+    float: left;
+}
+
+.ViewTableStyle
+{
+    width: 80%;
+    table-layout: fixed;
+    word-break:break-all;
+    height: auto; 
+    border: 1px solid #444444;
+    border-collapse: collapse;
+}
+
+.ViewThStyle
+{
+    background-color: #222;
+    color: #fff;
+    text-align:center;
+    border: 1px solid #bcbcbc;
+}
+
+.ViewTrStyle
+{
+    border:1px solid #bcbcbc;
+}
+
+.ViewTdStyle
+{
+    text-align:center;
+    border: 1px solid #bcbcbc;
+}
+
+a.btn
+{
+    text-decoration: none;
+    display:block;
+    width:80px;
+    line-height:30px;
+    text-align:center;
+    background-color:#222;
+    color:#fff;
+}
+
+.Listbtn
+{
+    text-decoration: none;
+    display:block;
+    width:100px;
+    line-height:30px;
+    text-align:center;
+    background-color:#222;
+    color:#fff;
+}
+
+.Writebtn
+{
+    text-decoration: none;
+    display:block;
+    width:100px;
+    line-height:30px;
+    text-align:center;
+    background-color:#222;
+    color:#fff;
+}
+
+.WriteTableStyle
+{
+    width:100px;
+    height: inherit; 
+    border: 1px solid #444444;
+    border-collapse: collapse;
+
+}
+
+.WriteTrStyle
+{
+    border:1px solid #bcbcbc;
+}
+
+.WriteThStyle
+{
+    background-color: #222;
+    color: #fff;
+    text-align:center;
+    border: 1px solid #bcbcbc;
+}
+
+.WriteTdStyle
+{
+    width: 100%;
+    text-align:center;
+    border: 1px solid #bcbcbc;
+}
+
+.ModifyTableStyle
+{
+    width:100%;
+    height: inherit; 
+    border: 1px solid #444444;
+    border-collapse: collapse;
+
+}
+
+.ModifyTrStyle
+{
+    border:1px solid #bcbcbc;
+}
+
+.ModifyThStyle
+{
+    background-color: #222;
+    color: #fff;
+    text-align:center;
+    border: 1px solid #bcbcbc;
+}
+
+.ModifyTdStyle
+{
+    width: 100%;
+    text-align:center;
+    border: 1px solid #bcbcbc;
+}
