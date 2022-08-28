@@ -130,7 +130,7 @@ select * from bbs where 1 order by doc_idx desc limit 0, 5;
 >
 [mysqli_fetch_array](https://m.blog.naver.com/diceworld/220295811114)
 
-- <a> 태그로 버튼 모양처럼 만들기
+- a 태그로 버튼 모양처럼 만들기
 <https://ojji.wayful.com/2013/12/HTML-set-Two-Parallel-DIVs-columns.html>
 <http://www.webpaper.kr/show/120&page=1>
 
