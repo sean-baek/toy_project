@@ -11,9 +11,51 @@
 
 ---
 
+# build the image using Dockerfile
+```
+docker build --tag apm_notice_board:1.0 ./
+```
+
+---
+
+# pull the docker image
+```bash
+docker pull xeanbaek/apm_notice_board:1.0
+```
+
+---
+
+# run docker image
+```bash
+docker run -it --name ubuntu-apm-notice-board -p 8080:80 xeanbaek/apm_notice_board:1.0 /bin/bash
+```
+
+---
+
+# apache2 restart
+```bash
+service apache2 restart
+```
+
+---
+
+# mysql start
+```bash
+service mysql start
+```
+
+---
+
+# Login Mysql
+```bash
+mysql
+```
+
+---
+
 # DB 구성
 ```sql
-create database member;
+create database member default character set utf8;
 ```
 
 ```sql
@@ -127,14 +169,14 @@ select * from bbs where 1 order by doc_idx desc limit 0, 5;
 ---
 
 # 참고 url
->
+
 [mysqli_fetch_array](https://m.blog.naver.com/diceworld/220295811114)
 
 - a 태그로 버튼 모양처럼 만들기
 <https://ojji.wayful.com/2013/12/HTML-set-Two-Parallel-DIVs-columns.html>
 <http://www.webpaper.kr/show/120&page=1>
 
-[php server 변수](https://unabated.tistory.com/entry/PHP-SERVER-함수)
+[php server 배열](https://unabated.tistory.com/entry/PHP-SERVER-함수)
 
 [php if문으로 html 조건 실행](https://araikuma.tistory.com/154)
 
