@@ -3,7 +3,7 @@
 ?>
 
 <?php
-    $reg_date = date("Y-m-d H:i:s");
+    $reg_date = time();
     $member_idx = $_SESSION['member_idx'];
 
     if($_SESSION['is_signin'] == 'y')

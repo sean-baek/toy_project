@@ -19,27 +19,73 @@ docker build --tag apm_notice_board:1.0 ./
 ---
 
 # pull the docker image
+- If you pull and run the image, all the settings below are complete.
+
 ```bash
 docker pull xeanbaek/apm_notice_board:1.0
 ```
 
 ---
 
-# run docker image
+# run a command in a new container
 ```bash
 docker run -it --name ubuntu-apm-notice-board -p 8080:80 xeanbaek/apm_notice_board:1.0 /bin/bash
 ```
 
----
-
-# apache2 restart
+## [optional] Enabling the systemctl command
 ```bash
-service apache2 restart
+docker run --privileged -it --name ubuntu-apm-notice-board -p 8080:80 xeanbaek/apm_notice_board:1.0 /bin/bash
 ```
 
 ---
 
-# mysql start
+# run a command in a running container
+```bash
+docker ps
+```
+
+```bash
+docker exec -it <Container ID> <command>
+ex) docker exec -it 286a6c299290 /bin/bash
+```
+
+---
+
+# Modify /etc/php/[php version]/apache2/php.ini
+```bash
+date.timezone = Asia/Seoul
+
+expose_php = Off
+
+# post 방식으로 넘겨질 최대 데이터 사이즈
+# upload_max_filesize와 인코더(encoder)를 포함한 mine 헤더 양식을 더한 모든 다른 필드 길이 합계
+post_max_size = 500M
+
+# 파일 업로드 허용 여부
+file_uploads = On
+
+# 최대 업로드 파일 사이즈(업로드 하는 모든 파일의 크기를 더한 값)
+upload_max_filesize = 200M
+
+# 최대 실행 시간. 파일 사이즈가 클수록 시간을 늘려줘야 한다.
+max_execution_time = 30
+
+# 스크립트 페이지로 넘어가기 전에 php 엔진이 데이터를 업로더 받는 시간
+max_input_time = 3600
+
+# 개발 환경을 위해 오류 출력
+display_errors = On
+
+# <?php 이렇게 쓰지 않고 <? 써도 알아먹게 설정
+short_open_tag On
+
+# 메모리 크기
+memory_limit = 512M
+```
+
+---
+
+# start Mysql
 ```bash
 service mysql start
 ```
@@ -53,43 +99,94 @@ mysql
 
 ---
 
-# DB 구성
+# Mysql Change password for root user
+```bash
+# php 8.0 이상
+-> ALTER user 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '변경 비밀번호';
+
+# php 8.0. 이하
+-> UPDATE mysql.user SET authentication_string=password(“변경할 비밀번호”) WHERE user=’root’
+
+# 변경 사항 저장
+flush privileges;
+```
+
+---
+
+# restart Mysql 
+```bash
+service mysql restart
+```
+
+---
+
+# Create DB
 ```sql
 create database member default character set utf8;
 ```
 
+# use DB
 ```sql
 use member;
 ```
 
+# Create signup_info table
 ```sql
 create table signup_info (
-	member_idx bigint(20) NOT NULL AUTO_INCREMENT,
+	member_idx bigint(20) NOT NULL AUTO_INCREMENT primary key,
 	username VARCHAR(30) NOT NULL,
 	id INT(11) NOT NULL,
 	pw VARCHAR(50) NOT NULL,
-	pw_ck VARCHAR(50) NOT NULL,
-	primary key(member_idx)
+	pw_ck VARCHAR(50) NOT NULL
 );
 ```
 
+# Create bbs table
 ```sql
 create table bbs (
-	doc_idx bigint(20) NOT NULL AUTO_INCREMENT,
+	doc_idx bigint(20) NOT NULL AUTO_INCREMENT primary key,
 	member_idx bigint(20) NOT NULL,
 	writer varchar(40) NOT NULL,
   	subject varchar(60) NULL,
   	content text NULL,
   	reg_date int(10) NULL,
-	views int(10) NULL default 0,
+	views int(10) NULL default 0
 ) default character set utf8 collate utf8_general_ci;
 ```
 
+## Optional
 ```sql
 alter table bbs MODIFY column subject varchar(60) character set utf8 collate utf8_general_ci;
 alter table bbs modify column content text character set utf8 collate utf8_general_ci;
 ```
 
+---
+
+# restart apache2
+```bash
+service apache2 restart
+```
+
+---
+
+# phpmyadmin 설치
+```bash
+apt install -y phpmyadmin
+```
+
+# phpmyadmin 설정
+- /etc/apache2/apache2.conf 파일 맨 밑에 아래 내용 기재 후 apache2 재시작
+
+```bash
+/etc/apache2/apache2.conf
+```
+```bash
+#Include phpMyAdmin
+Include /etc/phpmyadmin/apache.conf
+```
+```bash
+service apache2 restart
+```
 ---
 
 # useful info

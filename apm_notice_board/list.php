@@ -82,7 +82,7 @@
         <td scope="row" class=ListTdStyle><a href="http://<?= $_SERVER['HTTP_HOST'];?>/view.php?doc_idx=<?=$data['doc_idx'];?>"><?=$data['subject']?></a></td>
         <td scope="row" class=ListTdStyle><?=$data['member_idx']?></td>
         <td scope="row" class=ListTdStyle><?=$data['writer']?></td>
-        <td scope="row" class=ListTdStyle><?=$data['reg_date']?></td>
+        <td scope="row" class=ListTdStyle><?=date("Y:m:d H:i:s",$data['reg_date']);?></td>
         <td scope="row" class=ListTdStyle></td>
         <td scope="row" class=ListTdStyle><?=$data['views']?></td>
     </tr>
