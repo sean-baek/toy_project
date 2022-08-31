@@ -29,6 +29,8 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 # mysql home directory 지정
 RUN usermod -d /var/lib/mysql mysql
 
+# Dockerfile이 위치한 디렉토리에 있는 파일들
+# docker image 내의 /app 디렉토리에 복사
 ADD . /app
 
 RUN cp /app/* /var/www/html/
