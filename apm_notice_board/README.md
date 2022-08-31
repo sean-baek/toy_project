@@ -1,4 +1,4 @@
-# Apache, php, Mysql로 웹 게시판 만들기
+# Web notice board using Apache, php, Mysql
 
 ---
 
