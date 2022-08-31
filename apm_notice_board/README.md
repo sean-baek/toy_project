@@ -27,14 +27,25 @@ docker pull xeanbaek/apm_notice_board:2.0
 
 ---
 
-# run a command in a new container
+# when build using dockerfile, run a command in a new container
 ```bash
-docker run -it --name ubuntu-apm-notice-board -p 8080:80 xeanbaek/apm_notice_board:1.0 /bin/bash
+docker run -it --name ubuntu-apm-notice-board -p 8080:80 apm_notice_board:1.0 /bin/bash
+```
+
+# when pull docker image, run a command in a new container
+```bash
+docker run -it --name apm-notice-board -p 8080:80 xeanbaek/apm_notice_board:2.0 /bin/bash
+```
+```bash
+service apache2 restart
+```
+```bash
+service mysql restart
 ```
 
 ## [optional] Enabling the systemctl command
 ```bash
-docker run --privileged -it --name ubuntu-apm-notice-board -p 8080:80 xeanbaek/apm_notice_board:1.0 /bin/bash
+docker run --privileged -it --name ubuntu-apm-notice-board -p 8080:80 xeanbaek/apm_notice_board:2.0 /bin/bash
 ```
 
 ---
@@ -50,7 +61,7 @@ ex) docker exec -it 286a6c299290 /bin/bash
 ```
 
 ---
-# Setting
+# Setting when building using Dockerfile
 
 ## 0. install PHP packages
 ```bash
