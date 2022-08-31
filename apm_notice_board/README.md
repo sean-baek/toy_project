@@ -22,7 +22,7 @@ docker build --tag apm_notice_board:1.0 ./
 - If you pull and run the image, all the settings below are complete.
 
 ```bash
-docker pull xeanbaek/apm_notice_board:1.0
+docker pull xeanbaek/apm_notice_board:2.0
 ```
 
 ---
@@ -50,8 +50,22 @@ ex) docker exec -it 286a6c299290 /bin/bash
 ```
 
 ---
+# Setting
 
-# Modify /etc/php/[php version]/apache2/php.ini
+## 0. install PHP packages
+```bash
+apt-get install -y software-properties-common
+```
+```bash
+add-apt-repository ppa:ondrej/php
+```
+```bash
+apt-get install -y php-{bz2,imagick,imap,intl,gd,mbstring,pspell,curl,mb,mbstring,mysql,readline,xml,xmlrpc,zip}
+```
+
+---
+
+## 1. Modify /etc/php/[php version]/apache2/php.ini
 ```bash
 date.timezone = Asia/Seoul
 
@@ -85,52 +99,48 @@ memory_limit = 512M
 
 ---
 
-# start Mysql
+## Mysql Change password for root user
+
+### 2-1. start Mysql
 ```bash
 service mysql start
 ```
 
----
-
-# Login Mysql
+### 2-2. Login Mysql
 ```bash
 mysql
 ```
 
----
-
-# Mysql Change password for root user
+### 2-3. Type the command
 ```bash
-# php 8.0 이상
+# after php 8.0
 -> ALTER user 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '변경 비밀번호';
 
-# php 8.0. 이하
+# before php 8.0
 -> UPDATE mysql.user SET authentication_string=password(“변경할 비밀번호”) WHERE user=’root’
 
-# 변경 사항 저장
+# Save
 flush privileges;
 ```
 
----
-
-# restart Mysql 
+### 2-4. restart Mysql 
 ```bash
 service mysql restart
 ```
 
 ---
 
-# Create DB
+## 3-1. Create DB
 ```sql
 create database member default character set utf8;
 ```
 
-# use DB
+## 3-2. use DB
 ```sql
 use member;
 ```
 
-# Create signup_info table
+## 3-3. Create signup_info table
 ```sql
 create table signup_info (
 	member_idx bigint(20) NOT NULL AUTO_INCREMENT primary key,
@@ -141,7 +151,7 @@ create table signup_info (
 );
 ```
 
-# Create bbs table
+## 3-4. Create bbs table
 ```sql
 create table bbs (
 	doc_idx bigint(20) NOT NULL AUTO_INCREMENT primary key,
@@ -162,7 +172,7 @@ alter table bbs modify column content text character set utf8 collate utf8_gener
 
 ---
 
-# restart apache2
+## 4. restart apache2
 ```bash
 service apache2 restart
 ```
