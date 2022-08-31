@@ -60,7 +60,7 @@ apt-get install -y software-properties-common
 add-apt-repository ppa:ondrej/php
 ```
 ```bash
-apt-get install -y php-{bz2,imagick,imap,intl,gd,mbstring,pspell,curl,mb,mbstring,mysql,readline,xml,xmlrpc,zip}
+apt-get install -y php-{bz2,imagick,imap,intl,gd,mbstring,pspell,curl,mbstring,mysql,readline,xml,xmlrpc,zip}
 ```
 
 ---
@@ -69,6 +69,7 @@ apt-get install -y php-{bz2,imagick,imap,intl,gd,mbstring,pspell,curl,mb,mbstrin
 ```bash
 date.timezone = Asia/Seoul
 
+# php 버전 정보 숨기기
 expose_php = Off
 
 # post 방식으로 넘겨질 최대 데이터 사이즈
@@ -130,17 +131,24 @@ service mysql restart
 
 ---
 
-## 3-1. Create DB
+## Create Db and Table
+
+### 3-1. Login Mysql
+```bash
+mysql -uroot -p
+```
+
+### 3-2. Create DB
 ```sql
 create database member default character set utf8;
 ```
 
-## 3-2. use DB
+### 3-3. use DB
 ```sql
 use member;
 ```
 
-## 3-3. Create signup_info table
+### 3-4. Create signup_info table
 ```sql
 create table signup_info (
 	member_idx bigint(20) NOT NULL AUTO_INCREMENT primary key,
@@ -151,7 +159,7 @@ create table signup_info (
 );
 ```
 
-## 3-4. Create bbs table
+### 3-5. Create bbs table
 ```sql
 create table bbs (
 	doc_idx bigint(20) NOT NULL AUTO_INCREMENT primary key,
@@ -164,7 +172,7 @@ create table bbs (
 ) default character set utf8 collate utf8_general_ci;
 ```
 
-## Optional
+### Optional
 ```sql
 alter table bbs MODIFY column subject varchar(60) character set utf8 collate utf8_general_ci;
 alter table bbs modify column content text character set utf8 collate utf8_general_ci;
@@ -197,9 +205,13 @@ Include /etc/phpmyadmin/apache.conf
 ```bash
 service apache2 restart
 ```
+
 ---
 
 # useful info
+
+## PHP
+
 > php의 $_SERVER 변수
 ```php
 $_SERVER['DOCUMENT_ROOT'] = 현재 사이트가 위치한 서버상의 위치 = webappinclude
@@ -218,6 +230,8 @@ $_SERVER['PHP_SELF'] = 현재페이지의 주소에서 도메인과 넘겨지는
 $_SERVER['APPL_PHYSICAL_PATH'] = 현재페이지의 실제 파일 주소 = Dwebapp
 ```
 
+## Mysql
+
 > mysql 테이블 생성 시 제약 조건들
 ```bash
 - NOT NULL : 해당 필드는 NULL 값을 저장할 수 없게 됩니다.
@@ -230,22 +244,6 @@ $_SERVER['APPL_PHYSICAL_PATH'] = 현재페이지의 실제 파일 주소 = Dweba
 > mysql 컬럼 타입 변경하고자 할 때
 ```php
 alter table [테이블명] modify [컬럼명] [타입];
-```
-
-> CSS class 정의할 때
-```css
-p a {}            --><P>태그안의 모든 <A>태그
-
-.mem a {}      --> mem이라는 class안의 모든 <A>태그
-
-P .mem {}      --> <P>태그안의 모든 mem이라는 class를 가진 태그들
-
-.ttt tr.www td {}       --> ttt라는 테이블안의 www라는 tr안의 td
-```
-
-> table 태그에서 칸과 칸 사이에 공백을 없앨 때 css 속성
-```html
-border-collapse: collapse;
 ```
 
 > auto_increment 값 초기화
@@ -273,6 +271,30 @@ select * from bbs where 1 order by doc_idx limit 0, 5;
 ```sql
 select * from bbs where 1 order by doc_idx desc limit 0, 5;
 ```
+
+> innodb_buffer_pool_size 조회
+```sql
+show global variables like '%innodb_buffer_pool_size%';
+```
+
+## HTML + CSS
+
+> CSS class 정의할 때
+```css
+p a {}            --><P>태그안의 모든 <A>태그
+
+.mem a {}      --> mem이라는 class안의 모든 <A>태그
+
+P .mem {}      --> <P>태그안의 모든 mem이라는 class를 가진 태그들
+
+.ttt tr.www td {}       --> ttt라는 테이블안의 www라는 tr안의 td
+```
+
+> table 태그에서 칸과 칸 사이에 공백을 없앨 때 css 속성
+```html
+border-collapse: collapse;
+```
+
 ---
 
 # 참고 url
