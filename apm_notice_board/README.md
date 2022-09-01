@@ -221,6 +221,22 @@ service apache2 restart
 
 # useful info
 
+## minimal Ubuntu packages when running apache, php, mysql environments
+```bash
+apt install -y apache2 mysql-server php libapache2-mod-php php-mysql
+```
+
+## Apache
+
+> hide apache version
+```bash
+/etc/httpd/conf/httpd.conf
+
+```
+```bash
+ServerTokens Prod
+```
+
 ## PHP
 
 > php의 $_SERVER 변수
@@ -310,6 +326,8 @@ border-collapse: collapse;
 
 # 참고 url
 
+## programming
+
 [mysqli_fetch_array](https://m.blog.naver.com/diceworld/220295811114)
 
 - a 태그로 버튼 모양처럼 만들기
@@ -343,5 +361,33 @@ border-collapse: collapse;
 [div 태그 영역 밖과 안쪽에 여백주기](https://ojji.wayful.com/2013/12/HTML-DIV-to-Space-Inside-and-Outside-div-block.html)
 
 [div 태그 마스터](https://lifeblog.co.kr/1648/)
+
+## setting
+
+### dockerfile 레이어 관련하여 효율적으로 작성하기
+<https://junhyunny.github.io/information/docker/docker-file-build-and-image-layer/>
+<https://jonnung.dev/docker/2020/04/08/optimizing-docker-images/>
+
+### ubuntu에 apm 환경 구축 시 최소 권장 패키지들
+<https://wnw1005.tistory.com/441>
+
+### docker ubuntu APM 환경 이미지 만들기 참고 url
+<https://hoing.io/archives/7367#APM_-_Apache_PHP_MySQL>
+<https://falsy.me/docker-1-docker로-ubuntu-apache-php-환경의-이미지-만들기/>
+[docker APM 웹문서 경로 동기화](https://trytoso.tistory.com/1554)
+[Apache2 + php 웹 개발환경을 dockerfile로 직접 빌드하여 도커 컨테이너 이미지 생성 및 배포하기](https://blog.naver.com/PostView.naver?blogId=love_tolty&logNo=222473245364)
+[ubuntu APM 자동 설치](https://woochan-autobiography.tistory.com/655)
+
+### APM 환경 설정
+[ubuntu php.ini 파일 수정](https://webdir.tistory.com/221)
+
+
+### 에러났을 때 참고
+[mysql 실행시 디렉토리 관련 오류](https://stackoverflow.com/questions/62987154/mysql-wont-start-error-su-warning-cannot-change-directory-to-nonexistent)
+[dockerfile 빌드 시 apt 관련 오류](https://technote.kr/372)
+<https://zetawiki.com/wiki/우분투_apache2:_Could_not_reliably_determine_the_server's_fully_qualified_domain_name>
+[Access denied for user 'root'@'172.17.0.1' (using password: YES) 오류 났을  때](https://csksoft.tistory.com/69)
+[auto_increment 사용할 때 주의할 점](https://blog.daum.net/question0921/539)
+[ubuntu php 파일 실행이 안될 때](https://chojpsh1.tistory.com/94)
 
 ---
