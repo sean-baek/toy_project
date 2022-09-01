@@ -373,10 +373,15 @@ border-collapse: collapse;
 
 ### docker ubuntu APM 환경 이미지 만들기 참고 url
 <https://hoing.io/archives/7367#APM_-_Apache_PHP_MySQL>
+
 <https://falsy.me/docker-1-docker로-ubuntu-apache-php-환경의-이미지-만들기/>
+
 [docker APM 웹문서 경로 동기화](https://trytoso.tistory.com/1554)
+
 [Apache2 + php 웹 개발환경을 dockerfile로 직접 빌드하여 도커 컨테이너 이미지 생성 및 배포하기](https://blog.naver.com/PostView.naver?blogId=love_tolty&logNo=222473245364)
+
 [ubuntu APM 자동 설치](https://woochan-autobiography.tistory.com/655)
+
 
 ### APM 환경 설정
 [ubuntu php.ini 파일 수정](https://webdir.tistory.com/221)
@@ -384,10 +389,14 @@ border-collapse: collapse;
 
 ### 에러났을 때 참고
 [mysql 실행시 디렉토리 관련 오류](https://stackoverflow.com/questions/62987154/mysql-wont-start-error-su-warning-cannot-change-directory-to-nonexistent)
+
 [dockerfile 빌드 시 apt 관련 오류](https://technote.kr/372)
 <https://zetawiki.com/wiki/우분투_apache2:_Could_not_reliably_determine_the_server's_fully_qualified_domain_name>
+
 [Access denied for user 'root'@'172.17.0.1' (using password: YES) 오류 났을  때](https://csksoft.tistory.com/69)
+
 [auto_increment 사용할 때 주의할 점](https://blog.daum.net/question0921/539)
+
 [ubuntu php 파일 실행이 안될 때](https://chojpsh1.tistory.com/94)
 
 ---
