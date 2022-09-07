@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 		// 64bit nt header
 		print_nt_header64(inh64);
 	}
-	else
+	else if(inh->FileHeader.Machine == 0x014c)
 	{
 		IMAGE_NT_HEADERS32* inh32 = (IMAGE_NT_HEADERS32*)(buf + idh->e_lfanew);
 		// printf("IMAGE_NT_HEADERS32 : %d\n", sizeof(IMAGE_NT_HEADERS32));
@@ -48,6 +48,7 @@ int main(int argc, char** argv)
 		// 32bit nt header
 		print_nt_header32(inh32);
 	}
+
 	WORD section_num = inh->FileHeader.NumberOfSections;
 	
 	// section header
@@ -75,11 +76,14 @@ int get_file_size(FILE* fp)
 		return -1;
 	}
 
+	rewind(fp);
+
+	/*
 	if (fseek(fp, 0, SEEK_SET) != 0)
 	{
 		fprintf(stderr, "파일의 처음으로 이동할 수 없습니다. : %s\n", strerror(errno));
 		return -1;
-	}
+	}*/
 
 	return size;
 }
@@ -99,14 +103,14 @@ int get_file_content(FILE* fp, u_char** buf)
 		printf("\nFile Size : %dbyte\n\n", size);
 
 		// 파일 사이즈만큼 메모리 동적 할당 후 0으로 초기화
-		if ((*buf = (u_char**)malloc(size)) == NULL)
+		if ((*buf = (u_char*)malloc(size)) == NULL)
 			printf("malloc() error\n");
 
 		if (memset(*buf, 0x00, size) == NULL)
 			printf("memset() error\n");
 
 		// 동적 할당한 메모리에 file 내용 전체 읽기
-		if (fread(*buf, 1, size, fp) == NULL)
+		if (fread(*buf, 1, size, fp) == 0)
 			printf("fread() error\n");
 		
 		return 0;
@@ -143,7 +147,7 @@ void print_dos_header(IMAGE_DOS_HEADER* idh)
 void print_nt_header32(IMAGE_NT_HEADERS32* inh32)
 {
 	printf("========== [NT Header 32] ==========\n\n");
-	printf("- Signature[%dbyte]\t\t: %08X\n\n",sizeof(inh32->Signature), inh32->Signature);
+	printf("- Signature[%dbyte]\t\t\t: %08X\n\n",sizeof(inh32->Signature), inh32->Signature);
 	printf("---------- (FileHeader) ----------\n");
 	printf("- Machine[%dbyte]\t\t: %04X\n", sizeof(inh32->FileHeader.Machine), inh32->FileHeader.Machine);
 	printf("- NumberOfSections[%dbyte]\t: %04X\n", sizeof(inh32->FileHeader.NumberOfSections), inh32->FileHeader.NumberOfSections);
@@ -164,7 +168,7 @@ void print_nt_header32(IMAGE_NT_HEADERS32* inh32)
 	printf("- BaseOfCode[%dbyte]\t\t\t: %04X\n", sizeof(inh32->OptionalHeader.BaseOfCode), inh32->OptionalHeader.BaseOfCode);
 	printf("- BaseOfData[%dbyte]\t\t\t: %04X\n", sizeof(inh32->OptionalHeader.BaseOfData), inh32->OptionalHeader.BaseOfData);
 
-	printf("- ImageBase[%dbyte]\t\t\t: %04X\n", sizeof(inh32->OptionalHeader.ImageBase), (unsigned int)inh32->OptionalHeader.ImageBase);
+	printf("- ImageBase[%dbyte]\t\t\t: %04X\n", sizeof(inh32->OptionalHeader.ImageBase), inh32->OptionalHeader.ImageBase);
 	printf("- SectionAlignment[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.SectionAlignment), inh32->OptionalHeader.SectionAlignment);
 	printf("- FileAlignment[%dbyte]\t\t\t: %04X\n", sizeof(inh32->OptionalHeader.FileAlignment), inh32->OptionalHeader.FileAlignment);
 	printf("- MajorOperatingSystemVersion[%dbyte]\t: %04X\n", sizeof(inh32->OptionalHeader.MajorOperatingSystemVersion), inh32->OptionalHeader.MajorOperatingSystemVersion);
@@ -179,17 +183,16 @@ void print_nt_header32(IMAGE_NT_HEADERS32* inh32)
 	printf("- CheckSum[%dbyte]\t\t\t: %04X\n", sizeof(inh32->OptionalHeader.CheckSum), inh32->OptionalHeader.CheckSum);
 	printf("- Subsystem[%dbyte]\t\t\t: %04X\n", sizeof(inh32->OptionalHeader.Subsystem), inh32->OptionalHeader.Subsystem);
 	printf("- DllCharacteristics[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.DllCharacteristics), inh32->OptionalHeader.DllCharacteristics);
-	printf("- SizeOfStackReserve[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.SizeOfStackReserve), (unsigned int)inh32->OptionalHeader.SizeOfStackReserve);
-	printf("- SizeOfStackCommit[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.SizeOfStackCommit), (unsigned int)inh32->OptionalHeader.SizeOfStackCommit);
-	printf("- SizeOfHeapReserve[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.SizeOfHeapReserve), (unsigned int)inh32->OptionalHeader.SizeOfHeapReserve);
-	printf("- SizeOfHeapCommit[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.SizeOfHeapCommit), (unsigned int)inh32->OptionalHeader.SizeOfHeapCommit);
+	printf("- SizeOfStackReserve[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.SizeOfStackReserve), inh32->OptionalHeader.SizeOfStackReserve);
+	printf("- SizeOfStackCommit[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.SizeOfStackCommit), inh32->OptionalHeader.SizeOfStackCommit);
+	printf("- SizeOfHeapReserve[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.SizeOfHeapReserve), inh32->OptionalHeader.SizeOfHeapReserve);
+	printf("- SizeOfHeapCommit[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.SizeOfHeapCommit), inh32->OptionalHeader.SizeOfHeapCommit);
 	printf("- LoaderFlags[%dbyte]\t\t\t: %04X\n", sizeof(inh32->OptionalHeader.LoaderFlags), inh32->OptionalHeader.LoaderFlags);
 	printf("- NumberOfRvaAndSizes[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.NumberOfRvaAndSizes), inh32->OptionalHeader.NumberOfRvaAndSizes);
 	/*for (int i = 0; i < IMAGE_NUMBEROF_DIRECTORY_ENTRIES; i++)
 	{
 		printf("- DataDirectory[%d].VirtualAddress[%dbyte]\t: %08X\n", i, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 		printf("- DataDirectory[%d].Size[%dbyte]\t\t\t: %08X\n", i, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-
 	}
 	*/
 
@@ -203,7 +206,7 @@ void print_nt_header32(IMAGE_NT_HEADERS32* inh32)
 void print_nt_header64(IMAGE_NT_HEADERS64* inh64)
 {
 	printf("========== [NT Header 64] ==========\n\n");
-	printf("- Signature[%dbyte]\t\t: %08X\n\n", sizeof(inh64->Signature), inh64->Signature);
+	printf("- Signature[%dbyte]\t\t\t: %08X\n\n", sizeof(inh64->Signature), inh64->Signature);
 	printf("---------- (FileHeader) ----------\n");
 	printf("- Machine[%dbyte]\t\t\t: %04X\n", sizeof(inh64->FileHeader.Machine), inh64->FileHeader.Machine);
 	printf("- NumberOfSections[%dbyte]\t\t: %04X\n", sizeof(inh64->FileHeader.NumberOfSections), inh64->FileHeader.NumberOfSections);
@@ -217,39 +220,38 @@ void print_nt_header64(IMAGE_NT_HEADERS64* inh64)
 	printf("- Magic[%dbyte]\t\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.Magic), inh64->OptionalHeader.Magic);
 	printf("- MajorLinkerVersion[%dbyte]\t\t: %02X\n", sizeof(inh64->OptionalHeader.MajorLinkerVersion), inh64->OptionalHeader.MajorLinkerVersion);
 	printf("- MinorLinkerVersion[%dbyte]\t\t: %02X\n", sizeof(inh64->OptionalHeader.MinorLinkerVersion), inh64->OptionalHeader.MinorLinkerVersion);
-	printf("- SizeofCode[%dbyte]\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfCode), inh64->OptionalHeader.SizeOfCode);
-	printf("- SizeofInitializedData[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfInitializedData), inh64->OptionalHeader.SizeOfInitializedData);
-	printf("- SizeOfUninitializedData[%dbyte]\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfUninitializedData), inh64->OptionalHeader.SizeOfUninitializedData);
-	printf("- AddressOfEntryPoint[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.AddressOfEntryPoint), inh64->OptionalHeader.AddressOfEntryPoint);
-	printf("- BaseOfCode[%dbyte]\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.BaseOfCode), inh64->OptionalHeader.BaseOfCode);
+	printf("- SizeofCode[%dbyte]\t\t\t: %08X\n", sizeof(inh64->OptionalHeader.SizeOfCode), inh64->OptionalHeader.SizeOfCode);
+	printf("- SizeofInitializedData[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.SizeOfInitializedData), inh64->OptionalHeader.SizeOfInitializedData);
+	printf("- SizeOfUninitializedData[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.SizeOfUninitializedData), inh64->OptionalHeader.SizeOfUninitializedData);
+	printf("- AddressOfEntryPoint[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.AddressOfEntryPoint), inh64->OptionalHeader.AddressOfEntryPoint);
+	printf("- BaseOfCode[%dbyte]\t\t\t: %08X\n", sizeof(inh64->OptionalHeader.BaseOfCode), inh64->OptionalHeader.BaseOfCode);
 
-	printf("- ImageBase[%dbyte]\t\t\t: %08X\n", sizeof(inh64->OptionalHeader.ImageBase), (unsigned int)inh64->OptionalHeader.ImageBase);
-	printf("- SectionAlignment[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.SectionAlignment), inh64->OptionalHeader.SectionAlignment);
-	printf("- FileAlignment[%dbyte]\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.FileAlignment), inh64->OptionalHeader.FileAlignment);
+	printf("- ImageBase[%dbyte]\t\t\t: %016llX\n", sizeof(inh64->OptionalHeader.ImageBase), inh64->OptionalHeader.ImageBase);
+	printf("- SectionAlignment[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.SectionAlignment), inh64->OptionalHeader.SectionAlignment);
+	printf("- FileAlignment[%dbyte]\t\t\t: %08X\n", sizeof(inh64->OptionalHeader.FileAlignment), inh64->OptionalHeader.FileAlignment);
 	printf("- MajorOperatingSystemVersion[%dbyte]\t: %04X\n", sizeof(inh64->OptionalHeader.MajorOperatingSystemVersion), inh64->OptionalHeader.MajorOperatingSystemVersion);
 	printf("- MinorOperatingSystemVersion[%dbyte]\t: %04X\n", sizeof(inh64->OptionalHeader.MinorOperatingSystemVersion), inh64->OptionalHeader.MinorOperatingSystemVersion);
 	printf("- MajorImageVersion[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.MajorImageVersion), inh64->OptionalHeader.MajorImageVersion);
 	printf("- MinorImageVersion[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.MinorImageVersion), inh64->OptionalHeader.MinorImageVersion);
 	printf("- MajorSubsystemVersion[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.MajorSubsystemVersion), inh64->OptionalHeader.MajorSubsystemVersion);
 	printf("- MinorSubsystemVersion[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.MinorSubsystemVersion), inh64->OptionalHeader.MinorSubsystemVersion);
-	printf("- Win32VersionValue[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.Win32VersionValue), inh64->OptionalHeader.Win32VersionValue);
-	printf("- SizeOfImage[%dbyte]\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfImage), inh64->OptionalHeader.SizeOfImage);
-	printf("- SizeOfHeaders[%dbyte]\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfHeaders), inh64->OptionalHeader.SizeOfHeaders);
-	printf("- CheckSum[%d]\t\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.CheckSum), inh64->OptionalHeader.CheckSum);
+	printf("- Win32VersionValue[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.Win32VersionValue), inh64->OptionalHeader.Win32VersionValue);
+	printf("- SizeOfImage[%dbyte]\t\t\t: %08X\n", sizeof(inh64->OptionalHeader.SizeOfImage), inh64->OptionalHeader.SizeOfImage);
+	printf("- SizeOfHeaders[%dbyte]\t\t\t: %08X\n", sizeof(inh64->OptionalHeader.SizeOfHeaders), inh64->OptionalHeader.SizeOfHeaders);
+	printf("- CheckSum[%d]\t\t\t\t: %08X\n", sizeof(inh64->OptionalHeader.CheckSum), inh64->OptionalHeader.CheckSum);
 	printf("- Subsystem[%dbyte]\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.Subsystem), inh64->OptionalHeader.Subsystem);
 	printf("- DllCharacteristics[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.DllCharacteristics), inh64->OptionalHeader.DllCharacteristics);
-	printf("- SizeOfStackReserve[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfStackReserve), (unsigned int)inh64->OptionalHeader.SizeOfStackReserve);
-	printf("- SizeOfStackCommit[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfStackCommit), (unsigned int)inh64->OptionalHeader.SizeOfStackCommit);
-	printf("- SizeOfHeapReserve[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfHeapReserve), (unsigned int)inh64->OptionalHeader.SizeOfHeapReserve);
-	printf("- SizeOfHeapCommit[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfHeapCommit), (unsigned int)inh64->OptionalHeader.SizeOfHeapCommit);
-	printf("- LoaderFlags[%dbyte]\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.LoaderFlags), inh64->OptionalHeader.LoaderFlags);
-	printf("- NumberOfRvaAndSizes[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.NumberOfRvaAndSizes), inh64->OptionalHeader.NumberOfRvaAndSizes);
+	printf("- SizeOfStackReserve[%dbyte]\t\t: %016llX\n", sizeof(inh64->OptionalHeader.SizeOfStackReserve), inh64->OptionalHeader.SizeOfStackReserve);
+	printf("- SizeOfStackCommit[%dbyte]\t\t: %016llX\n", sizeof(inh64->OptionalHeader.SizeOfStackCommit), inh64->OptionalHeader.SizeOfStackCommit);
+	printf("- SizeOfHeapReserve[%dbyte]\t\t: %016llX\n", sizeof(inh64->OptionalHeader.SizeOfHeapReserve), inh64->OptionalHeader.SizeOfHeapReserve);
+	printf("- SizeOfHeapCommit[%dbyte]\t\t: %016llX\n", sizeof(inh64->OptionalHeader.SizeOfHeapCommit), inh64->OptionalHeader.SizeOfHeapCommit);
+	printf("- LoaderFlags[%dbyte]\t\t\t: %08X\n", sizeof(inh64->OptionalHeader.LoaderFlags), inh64->OptionalHeader.LoaderFlags);
+	printf("- NumberOfRvaAndSizes[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.NumberOfRvaAndSizes), inh64->OptionalHeader.NumberOfRvaAndSizes);
 	/*
 	for (int i = 0; i < IMAGE_NUMBEROF_DIRECTORY_ENTRIES; i++)
 	{
 		printf("- DataDirectory[%d].VirtualAddress[%dbyte]\t: %08X\n", i, sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
 		printf("- DataDirectory[%d].Size[%dbyte]\t\t\t: %08X\n", i, sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
-
 	}
 	*/
 	print_inh64_datadirectory(inh64);
@@ -261,11 +263,11 @@ void print_section_header(IMAGE_SECTION_HEADER* ish, WORD section_num)
 {
 	printf("========== [SECTION HEADERS] ==========\n\n");
 
-	for (int i = 0; i < section_num; i++)
+	for (int i = 0; i < section_num; i++, ish++)
 	{
 		//printf("%p\n", ish);
-		printf("- Name\t\t\t\t: %s\n", ish->Name);
-		printf("- PhysicalAddress[%dbyte]\t: %08X\n", sizeof(ish->Misc.PhysicalAddress), ish->Misc.PhysicalAddress);
+		printf("- Section Name\t\t\t: %s\n", ish->Name);
+		//printf("- PhysicalAddress[%dbyte]\t: %08X\n", sizeof(ish->Misc.PhysicalAddress), ish->Misc.PhysicalAddress);
 		printf("- VirtualSize[%dbyte]\t\t: %08X\n", sizeof(ish->Misc.VirtualSize), ish->Misc.VirtualSize);
 		printf("- VirtualAddress[%dbyte]\t\t: %08X\n", sizeof(ish->VirtualAddress), ish->VirtualAddress);
 		printf("- SizeOfRawData[%dbyte]\t\t: %08X\n", sizeof(ish->SizeOfRawData), ish->SizeOfRawData);
@@ -276,8 +278,6 @@ void print_section_header(IMAGE_SECTION_HEADER* ish, WORD section_num)
 		printf("- NumberOfLineNumbers[%dbyte]\t: %04X\n", sizeof(ish->NumberOfLinenumbers), ish->NumberOfLinenumbers);
 		printf("- Characteristics[%dbyte]\t: %08X\n\n", sizeof(ish->Characteristics), ish->Characteristics);
 		printf("=======================================\n\n");
-
-		ish++;	
 	}
 }
 
