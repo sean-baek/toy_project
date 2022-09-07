@@ -14,3 +14,5 @@ void print_dos_header(IMAGE_DOS_HEADER* idh);
 void print_nt_header32(IMAGE_NT_HEADERS32* inh32);
 void print_nt_header64(IMAGE_NT_HEADERS64* inh64);
 void print_section_header(IMAGE_SECTION_HEADER* ish, WORD section_num);
+void print_inh32_datadirectory(IMAGE_NT_HEADERS32* inh32);
+void print_inh64_datadirectory(IMAGE_NT_HEADERS32* inh64);

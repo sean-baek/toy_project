@@ -185,12 +185,17 @@ void print_nt_header32(IMAGE_NT_HEADERS32* inh32)
 	printf("- SizeOfHeapCommit[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.SizeOfHeapCommit), (unsigned int)inh32->OptionalHeader.SizeOfHeapCommit);
 	printf("- LoaderFlags[%dbyte]\t\t\t: %04X\n", sizeof(inh32->OptionalHeader.LoaderFlags), inh32->OptionalHeader.LoaderFlags);
 	printf("- NumberOfRvaAndSizes[%dbyte]\t\t: %04X\n", sizeof(inh32->OptionalHeader.NumberOfRvaAndSizes), inh32->OptionalHeader.NumberOfRvaAndSizes);
-	for (int i = 0; i < IMAGE_NUMBEROF_DIRECTORY_ENTRIES; i++)
+	/*for (int i = 0; i < IMAGE_NUMBEROF_DIRECTORY_ENTRIES; i++)
 	{
-		printf("- DataDirectory[%d].VirtualAddress[%dbyte] : %08X\n", i, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
-		printf("- DataDirectory[%d].VirtualAddress[%dbyte] : %08X\n", i, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+		printf("- DataDirectory[%d].VirtualAddress[%dbyte]\t: %08X\n", i, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+		printf("- DataDirectory[%d].Size[%dbyte]\t\t\t: %08X\n", i, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
 
 	}
+	*/
+
+	print_inh32_datadirectory(inh32);
+	
+
 	printf("----------------------------------------\n");
 	printf("========================================\n\n");
 }
@@ -239,13 +244,15 @@ void print_nt_header64(IMAGE_NT_HEADERS64* inh64)
 	printf("- SizeOfHeapCommit[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfHeapCommit), (unsigned int)inh64->OptionalHeader.SizeOfHeapCommit);
 	printf("- LoaderFlags[%dbyte]\t\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.LoaderFlags), inh64->OptionalHeader.LoaderFlags);
 	printf("- NumberOfRvaAndSizes[%dbyte]\t: %04X\n", sizeof(inh64->OptionalHeader.NumberOfRvaAndSizes), inh64->OptionalHeader.NumberOfRvaAndSizes);
+	/*
 	for (int i = 0; i < IMAGE_NUMBEROF_DIRECTORY_ENTRIES; i++)
 	{
-		printf("- DataDirectory[%d].VirtualAddress[%dbyte] : %08X\n", i, sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
-		printf("- DataDirectory[%d].VirtualAddress[%dbyte] : %08X\n", i, sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+		printf("- DataDirectory[%d].VirtualAddress[%dbyte]\t: %08X\n", i, sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+		printf("- DataDirectory[%d].Size[%dbyte]\t\t\t: %08X\n", i, sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
 
 	}
-
+	*/
+	print_inh64_datadirectory(inh64);
 	printf("------------------------------------\n");
 	printf("====================================\n\n");
 }
@@ -272,4 +279,143 @@ void print_section_header(IMAGE_SECTION_HEADER* ish, WORD section_num)
 
 		ish++;	
 	}
+}
+
+void print_inh32_datadirectory(IMAGE_NT_HEADERS32* inh32)
+{
+	int i = 0;
+
+	printf("- EXPORT Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- EXPORT Directory Size[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- IMPORT Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- IMPORT Directory Size[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- RESOURCE Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- RESOURCE Directory Size[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- EXCEPTION Directory RVA[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- EXCEPTION Directory Size[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- SECURITY Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- SECURITY Directory Size[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- BASERELOC Directory RVA[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- BASERELOC Directory Size[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- DEBUG Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- DEBUG Directory Size[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- COPYRIGHT Directory RVA[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- COPYRIGHT Directory Size[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- GLOBALPTR Directory RVA[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- GLOBALPTR Directory Size[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- TLS Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- TLS Directory Size[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- LOAD_CONFIG Directory RVA[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- LOAD_CONFIG Directory Size[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- BOUND_IMPORT Directory RVA[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- BOUND_IMPORT Directory Size[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- IAT Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- IAT Directory Size[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- DELAY_IMPORT Directory RVA[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- DELAY_IMPORT Directory Size[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- COM_DESCRIPTOR Directory RVA[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- COM_DESCRIPTOR Directory Size[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- Reserved Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- Reserved Directory Size[%dbyte]\t: %08X\n", sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
+	i++;
+}
+
+
+void print_inh64_datadirectory(IMAGE_NT_HEADERS32* inh64)
+{
+	int i = 0;
+
+	printf("- EXPORT Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- EXPORT Directory Size[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- IMPORT Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- IMPORT Directory Size[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- RESOURCE Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- RESOURCE Directory Size[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- EXCEPTION Directory RVA[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- EXCEPTION Directory Size[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- SECURITY Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- SECURITY Directory Size[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- BASERELOC Directory RVA[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- BASERELOC Directory Size[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- DEBUG Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- DEBUG Directory Size[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- COPYRIGHT Directory RVA[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- COPYRIGHT Directory Size[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- GLOBALPTR Directory RVA[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- GLOBALPTR Directory Size[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- TLS Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- TLS Directory Size[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- LOAD_CONFIG Directory RVA[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- LOAD_CONFIG Directory Size[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- BOUND_IMPORT Directory RVA[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- BOUND_IMPORT Directory Size[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- IAT Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- IAT Directory Size[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- DELAY_IMPORT Directory RVA[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- DELAY_IMPORT Directory Size[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- COM_DESCRIPTOR Directory RVA[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- COM_DESCRIPTOR Directory Size[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
+
+	printf("- Reserved Directory RVA[%dbyte]\t\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].VirtualAddress), inh64->OptionalHeader.DataDirectory[i].VirtualAddress);
+	printf("- Reserved Directory Size[%dbyte]\t: %08X\n", sizeof(inh64->OptionalHeader.DataDirectory[i].Size), inh64->OptionalHeader.DataDirectory[i].Size);
+	i++;
 }
