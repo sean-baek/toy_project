@@ -224,8 +224,8 @@ void print_nt_header64(IMAGE_NT_HEADERS64* inh64)
 	printf("- BaseOfCode[%dbyte]\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.BaseOfCode), inh64->OptionalHeader.BaseOfCode);
 
 	printf("- ImageBase[%dbyte]\t\t\t: %08X\n", sizeof(inh64->OptionalHeader.ImageBase), (unsigned int)inh64->OptionalHeader.ImageBase);
-	printf("- SectionAlignment[%dbyte]\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.SectionAlignment), inh64->OptionalHeader.SectionAlignment);
-	printf("- FileAlignment[%dbyte]\t\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.FileAlignment), inh64->OptionalHeader.FileAlignment);
+	printf("- SectionAlignment[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.SectionAlignment), inh64->OptionalHeader.SectionAlignment);
+	printf("- FileAlignment[%dbyte]\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.FileAlignment), inh64->OptionalHeader.FileAlignment);
 	printf("- MajorOperatingSystemVersion[%dbyte]\t: %04X\n", sizeof(inh64->OptionalHeader.MajorOperatingSystemVersion), inh64->OptionalHeader.MajorOperatingSystemVersion);
 	printf("- MinorOperatingSystemVersion[%dbyte]\t: %04X\n", sizeof(inh64->OptionalHeader.MinorOperatingSystemVersion), inh64->OptionalHeader.MinorOperatingSystemVersion);
 	printf("- MajorImageVersion[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.MajorImageVersion), inh64->OptionalHeader.MajorImageVersion);
@@ -242,8 +242,8 @@ void print_nt_header64(IMAGE_NT_HEADERS64* inh64)
 	printf("- SizeOfStackCommit[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfStackCommit), (unsigned int)inh64->OptionalHeader.SizeOfStackCommit);
 	printf("- SizeOfHeapReserve[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfHeapReserve), (unsigned int)inh64->OptionalHeader.SizeOfHeapReserve);
 	printf("- SizeOfHeapCommit[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.SizeOfHeapCommit), (unsigned int)inh64->OptionalHeader.SizeOfHeapCommit);
-	printf("- LoaderFlags[%dbyte]\t\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.LoaderFlags), inh64->OptionalHeader.LoaderFlags);
-	printf("- NumberOfRvaAndSizes[%dbyte]\t: %04X\n", sizeof(inh64->OptionalHeader.NumberOfRvaAndSizes), inh64->OptionalHeader.NumberOfRvaAndSizes);
+	printf("- LoaderFlags[%dbyte]\t\t\t: %04X\n", sizeof(inh64->OptionalHeader.LoaderFlags), inh64->OptionalHeader.LoaderFlags);
+	printf("- NumberOfRvaAndSizes[%dbyte]\t\t: %04X\n", sizeof(inh64->OptionalHeader.NumberOfRvaAndSizes), inh64->OptionalHeader.NumberOfRvaAndSizes);
 	/*
 	for (int i = 0; i < IMAGE_NUMBEROF_DIRECTORY_ENTRIES; i++)
 	{
@@ -351,7 +351,7 @@ void print_inh32_datadirectory(IMAGE_NT_HEADERS32* inh32)
 }
 
 
-void print_inh64_datadirectory(IMAGE_NT_HEADERS32* inh64)
+void print_inh64_datadirectory(IMAGE_NT_HEADERS64* inh64)
 {
 	int i = 0;
 
