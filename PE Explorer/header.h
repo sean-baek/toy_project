@@ -18,3 +18,4 @@ void print_nt_header64(FILE* fp, IMAGE_NT_HEADERS64* inh64);
 void print_section_header(FILE* fp, IMAGE_SECTION_HEADER* ish, WORD section_num);
 void print_inh32_datadirectory(FILE* fp, IMAGE_NT_HEADERS32* inh32);
 void print_inh64_datadirectory(FILE* fp, IMAGE_NT_HEADERS64* inh64);
+int rva_to_raw(FILE* fp, u_char** binary_buf, DWORD rva_value);

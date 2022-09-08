@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv)
 {
-	int size = 0, raw = 0;
+	int size = 0;
 	FILE* file = NULL;
 	u_char* buf = NULL;
 
@@ -26,137 +26,107 @@ int main(int argc, char** argv)
 	IMAGE_DOS_HEADER* idh = (IMAGE_DOS_HEADER*)buf;
 	IMAGE_NT_HEADERS* inh = (IMAGE_NT_HEADERS*)(buf + idh->e_lfanew);
 	IMAGE_SECTION_HEADER* ish = (IMAGE_SECTION_HEADER*)(buf + idh->e_lfanew + sizeof(inh->Signature) + sizeof(inh->FileHeader) + inh->FileHeader.SizeOfOptionalHeader);
-	
-	/*
+
+
 	DWORD val = inh->OptionalHeader.DataDirectory[1].VirtualAddress;
 	printf("val : %d, %X\n", val, val);
 
-	raw = rva_to_raw(file, &buf, val);
+	int raw = rva_to_raw(file, &buf, val);
 	printf("raw : %d, %X\n", raw, raw);
 
 	IMAGE_IMPORT_DESCRIPTOR* iid = (IMAGE_IMPORT_DESCRIPTOR*)(buf + raw); // IID 구조체의 배열 시작 주소(RVA)를 가리킴
-	*/
 
-	// 64bit 환경에서의 프로그램일 때
+	//printf("%p\n", iid);
 	if ((inh->FileHeader.Machine == 0x0200) || (inh->FileHeader.Machine == 0x8664))
 	{
 		printf("\n64bit Program\n\n");
-		printf("File Size : %dbyte\n\n", size);
-
-		/*show dos header*/
+		printf("File Size :%dbyte\n\n", size);
+		// dos header 
 		print_dos_header(file, idh);
 
-
-
-		// 64bit용 NT Header 포인터 변수 선언 및 buf에서 위치 지정
 		IMAGE_NT_HEADERS64* inh64 = (IMAGE_NT_HEADERS64*)(buf + idh->e_lfanew);
+		//printf("IMAGE_NT_HEADERS64 :%d\n", sizeof(IMAGE_NT_HEADERS64));
 
-		// 파일 포인터를 NT Header 위치로 이동
+		// 파일 포인터를 NT header 위치로 이동
 		fseek(file, idh->e_lfanew, SEEK_SET);
 		offset = ftell(file);
-
-		/*show 64bit용 NT Header*/ 
+		// 64bit nt header
 		print_nt_header64(file, inh64);
 
-
-
-		// offset 출력을 위한 section header 처음 부분 가리키기
+		// section 헤더 처음 부분 가리키기
 		fseek(file, (idh->e_lfanew + sizeof(inh64->Signature) + sizeof(inh64->FileHeader) + inh64->FileHeader.SizeOfOptionalHeader), SEEK_SET);
 		offset = ftell(file);
-
-		// print_section_header()에서 for문에 사용될 section 개수 구하기
+		// section 개수 구하기
 		WORD section_num = inh64->FileHeader.NumberOfSections;
-		
-		/*show section header */ 
+		// section header
 		print_section_header(file, ish, section_num);
 
-
-		
-		/* IMAGE_IMPORT_DESCRIPTOR */ 
-		//DWORD val = inh->OptionalHeader.DataDirectory[1].VirtualAddress;
-		raw = rva_to_raw(file, &buf, inh64->OptionalHeader.DataDirectory[1].VirtualAddress);
-		IMAGE_IMPORT_DESCRIPTOR* iid64 = (IMAGE_IMPORT_DESCRIPTOR*)(buf + raw); // IID 구조체의 배열 시작 주소(RVA)를 가리킴
-
+		// IMAGE_IMPORT_DESCRIPTOR
 		int import_descriptor_size = 0;
+		printf("import_descfiptor_size : %d\n", inh64->OptionalHeader.DataDirectory[1].Size);
 		DWORD val = inh64->OptionalHeader.DataDirectory[1].VirtualAddress;
 
-		raw = rva_to_raw(file, &buf, val);
+		int raw = rva_to_raw(file, &buf, val);
 		printf("raw : %d, %X\n", raw, raw);
 
 	}
-	// 32bit 환경에서의 프로그램일 때
-	else if(inh->FileHeader.Machine == 0x014c)
+	else if (inh->FileHeader.Machine == 0x014c)
 	{
 		printf("\n32bit Program\n\n");
 		printf("File Size :%dbyte\n\n", size);
 
 
-		/* dos header */
+		// dos header 
 		print_dos_header(file, idh);
 
-		// 32bit용 NT Header 포인터 변수 선언 및 buf에서 위치 지정
 		IMAGE_NT_HEADERS32* inh32 = (IMAGE_NT_HEADERS32*)(buf + idh->e_lfanew);
+		// printf("IMAGE_NT_HEADERS32 :%d\n", sizeof(IMAGE_NT_HEADERS32));
 
 		// 파일 포인터를 NT header 위치로 이동
 		fseek(file, idh->e_lfanew, SEEK_SET);
 		offset = ftell(file);
-		/*show 32bit용 NT Header*/
+		// 32bit nt header
 		print_nt_header32(file, inh32);
 
-
-		// offset 출력을 위한 section header 처음 부분 가리키기
+		// section 헤더 처음 부분 가리키기
 		fseek(file, (idh->e_lfanew + sizeof(inh32->Signature) + sizeof(inh32->FileHeader) + inh32->FileHeader.SizeOfOptionalHeader), SEEK_SET);
 		offset = ftell(file);
-		// print_section_header()에서 for문에 사용될 section 개수 구하기
+		// section 개수 구하기
 		WORD section_num = inh32->FileHeader.NumberOfSections;
-		/*show section header */
+		// section header
 		print_section_header(file, ish, section_num);
 
 
 
 		// IMAGE_IMPORT_DESCRIPTOR
-		printf("========== [IMAGE_IMPORT_DESCRIPTOR] ==========\n\n");
-		raw = rva_to_raw(file, &buf, inh32->OptionalHeader.DataDirectory[1].VirtualAddress);
-		printf("IMPORT Directory RAW : %X\n\n", raw);
-		IMAGE_IMPORT_DESCRIPTOR* iid = (IMAGE_IMPORT_DESCRIPTOR*)(buf + raw);
+		DWORD val = inh32->OptionalHeader.DataDirectory[1].VirtualAddress;
+		int raw = rva_to_raw(file, &buf, val);
 
 		fseek(file, raw, SEEK_SET);
-		offset = ftell(file);
-		
-	
-
-		// offset 출력을 위한 section header 처음 부분 가리키기
-		fseek(file, raw, SEEK_SET);
-		//printf("IID structure raw : %X\n", ftell(file));
+		printf("IID structure raw : %X\n", ftell(file));
 
 		// IID 구조체 배열의 크기
 		int import_descriptor_size = inh32->OptionalHeader.DataDirectory[1].Size;
-		
+		printf("import_descfiptor_size : %d\n", inh32->OptionalHeader.DataDirectory[1].Size);
+
 		for (int i = 0; i < import_descriptor_size; i++, iid++)
 		{
-			if (iid->Characteristics == 0x00000000 && iid->OriginalFirstThunk == 0x00000000 && iid->TimeDateStamp == 0x00000000 && iid->ForwarderChain == 0x00000000 && iid->Name == 0x00000000 && iid->FirstThunk == 0x00000000)
-				break;
-
-			printf("[%08X] : OriginalFirstThunk[%dbyte]\t: %08X(RVA), %08X(RAW)\n", offset, sizeof(iid->OriginalFirstThunk), iid->OriginalFirstThunk, rva_to_raw(file, &buf, iid->OriginalFirstThunk));
-			offset = get_file_offset(file, sizeof(iid->OriginalFirstThunk));
-			
-			printf("[%08X] : TimeDateStamp[%dbyte]\t: %08X(RVA), %08X(RAW)\n", offset, sizeof(iid->TimeDateStamp), iid->TimeDateStamp, rva_to_raw(file, &buf, iid->TimeDateStamp));
-			offset = get_file_offset(file, sizeof(iid->TimeDateStamp));
-			
-			printf("[%08X] : ForwarderChain[%dbyte]\t: %08X(RVA), %08X(RAW)\n", offset, sizeof(iid->ForwarderChain), iid->ForwarderChain, rva_to_raw(file, &buf, iid->ForwarderChain));
-			offset = get_file_offset(file, sizeof(iid->ForwarderChain));
-			
 			raw = rva_to_raw(file, &buf, iid->Name);
-			printf("[%08X] : Name[%dbyte]\t\t: %08X(RVA), %s\n", offset, sizeof(iid->Name), iid->Name ,buf+raw);
-			offset = get_file_offset(file, sizeof(iid->Name));
-			
-			printf("[%08X] : FirstThunk[%dbyte]\t\t: %08X(RVA), %08X(RAW)\n", offset, sizeof(iid->FirstThunk), iid->FirstThunk, rva_to_raw(file, &buf, iid->FirstThunk));
-			offset = get_file_offset(file, sizeof(iid->FirstThunk));
+			printf("%s\n", buf + raw);
+			//printf("%s\n", (iid + raw));
+			//printf("%X\n", raw);
+			//printf("%d, %x\n", raw, raw);
+			//printf("%x\n", raw);
+			//printf("%08X\n", raw);
+		}
 
-			printf("\n===============================================\n\n");
-		}		
+
+
+
+		//printf("raw : %d, %X\n", raw, raw);
+
 	}
-	
+
 
 	free(buf);
 	fclose(file);
@@ -205,7 +175,7 @@ int get_file_size(FILE* fp)
 
 int get_file_content(FILE* fp, u_char** buf)
 {
-	
+
 	int size = 0;
 
 	// 파일 사이즈 구하기
@@ -218,22 +188,10 @@ int get_file_content(FILE* fp, u_char** buf)
 	{
 		// 파일 사이즈만큼 메모리 동적 할당 후 0으로 초기화
 		if ((*buf = (u_char*)malloc(size + 1)) == NULL)
-		{
 			printf("malloc() error\n");
-			return 0;
-		}
-
-		if (buf == NULL)
-		{
-			printf("동적 메모리를 할당할 수 없습니다.\n");
-			return 0;
-		}
 
 		if (memset(*buf, 0x00, size) == NULL)
-		{
 			printf("memset() error\n");
-			return 0;
-		}
 
 		// 이미 어떠한 작업을 거친 파일 포인터를 get_file_content에 넘겨도 동작하도록 하기 위함
 		rewind(fp);
@@ -243,7 +201,7 @@ int get_file_content(FILE* fp, u_char** buf)
 			printf("fread() error\n");
 
 		rewind(fp);
-		
+
 		return size;
 	}
 }
@@ -252,16 +210,16 @@ int get_file_content(FILE* fp, u_char** buf)
 int get_file_offset(FILE* fp, int size)
 {
 	fseek(fp, size, SEEK_CUR);
-	return ftell(fp);	
+	return ftell(fp);
 }
 
-void print_dos_header(FILE *fp ,IMAGE_DOS_HEADER* idh)
+void print_dos_header(FILE* fp, IMAGE_DOS_HEADER* idh)
 {
 
 	printf("========== [Dos Header] ==========\n");
 	// 파일의 처음으로 이동하여
 	fseek(fp, 0, SEEK_SET);
-	
+
 	// offset 가져오기
 	offset = ftell(fp);
 	printf("[%08X] : e_magic[%dbyte]\t:%04X\n", offset, sizeof(idh->e_magic), idh->e_magic);
@@ -305,13 +263,13 @@ void print_dos_header(FILE *fp ,IMAGE_DOS_HEADER* idh)
 
 	printf("[%08X] : e_ovno[%dbyte]\t:%04X\n", offset, sizeof(idh->e_ovno), idh->e_ovno);
 	offset = get_file_offset(fp, sizeof(idh->e_ovno));
-	
+
 	for (int i = 0; i < 4; i++)
 	{
 		printf("[%08X] : e_res[%d][%dbyte]\t:%04X\n", offset, i, sizeof(idh->e_res[i]), idh->e_res[i]);
 		offset = get_file_offset(fp, sizeof(idh->e_res[i]));
 	}
-	
+
 	printf("[%08X] : e_oemid[%dbyte]\t:%04X\n", offset, sizeof(idh->e_oemid), idh->e_oemid);
 	offset = get_file_offset(fp, sizeof(idh->e_oemid));
 
@@ -325,7 +283,7 @@ void print_dos_header(FILE *fp ,IMAGE_DOS_HEADER* idh)
 		offset = get_file_offset(fp, sizeof(idh->e_res2[i]));
 	}
 
-	
+
 	printf("[%08X] : e_lfanew[%dbyte]\t:%08X\n", offset, sizeof(idh->e_lfanew), idh->e_lfanew);
 	offset = get_file_offset(fp, sizeof(idh->e_lfanew));
 
@@ -461,7 +419,7 @@ void print_nt_header32(FILE* fp, IMAGE_NT_HEADERS32* inh32)
 	*/
 
 	print_inh32_datadirectory(fp, inh32);
-	
+
 
 	printf("----------------------------------------\n");
 	printf("========================================\n\n");
@@ -495,7 +453,7 @@ void print_nt_header64(FILE* fp, IMAGE_NT_HEADERS64* inh64)
 	printf("[%08X] : Characteristics[%dbyte]\t\t:%04X\n", offset, sizeof(inh64->FileHeader.Characteristics), inh64->FileHeader.Characteristics);
 	offset = get_file_offset(fp, sizeof(inh64->FileHeader.Characteristics));
 	printf("------------------------------------\n\n");
-	
+
 	printf("---------- (OptionalHeader64) ----------\n");
 	printf("[%08X] : Magic[%dbyte]\t\t\t:%04X\n", offset, sizeof(inh64->OptionalHeader.Magic), inh64->OptionalHeader.Magic);
 	offset = get_file_offset(fp, sizeof(inh64->OptionalHeader.Magic));
@@ -652,91 +610,91 @@ void print_inh32_datadirectory(FILE* fp, IMAGE_NT_HEADERS32* inh32)
 	printf("[%08X] : IMPORT Directory RVA[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : IMPORT Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : RESOURCE Directory RVA[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : RESOURCE Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : EXCEPTION Directory RVA[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : EXCEPTION Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : SECURITY Directory RVA[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : SECURITY Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : BASERELOC Directory RVA[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : BASERELOC Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : DEBUG Directory RVA[%dbyte]\t\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : DEBUG Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : COPYRIGHT Directory RVA[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : COPYRIGHT Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : GLOBALPTR Directory RVA[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : GLOBALPTR Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : TLS Directory RVA[%dbyte]\t\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : TLS Directory Size[%dbyte]\t\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : LOAD_CONFIG Directory RVA[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : LOAD_CONFIG Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : BOUND_IMPORT Directory RVA[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : BOUND_IMPORT Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : IAT Directory RVA[%dbyte]\t\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : IAT Directory Size[%dbyte]\t\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : DELAY_IMPORT Directory RVA[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : DELAY_IMPORT Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : COM_DESCRIPTOR Directory RVA[%dbyte]\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : COM_DESCRIPTOR Directory Size[%dbyte]\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 
 	printf("[%08X] : Reserved Directory RVA[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress), inh32->OptionalHeader.DataDirectory[i].VirtualAddress);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.DataDirectory[i].VirtualAddress));
 	printf("[%08X] : Reserved Directory Size[%dbyte]\t\t:%08X\n", offset, sizeof(inh32->OptionalHeader.DataDirectory[i].Size), inh32->OptionalHeader.DataDirectory[i].Size);
-	
+
 	i++;
 }
 
@@ -848,7 +806,7 @@ void print_inh64_datadirectory(FILE* fp, IMAGE_NT_HEADERS64* inh64)
 
 int rva_to_raw(FILE* fp, u_char** binary_buf, DWORD rva_value)
 {
-	int raw;
+	printf("\nrva_value : %X\n", rva_value);
 	IMAGE_DOS_HEADER* rtr_idh = (IMAGE_DOS_HEADER*)*binary_buf;
 	IMAGE_NT_HEADERS* rtr_inh = (IMAGE_NT_HEADERS*)(*binary_buf + rtr_idh->e_lfanew);
 
@@ -857,23 +815,41 @@ int rva_to_raw(FILE* fp, u_char** binary_buf, DWORD rva_value)
 	{
 		IMAGE_NT_HEADERS32* rtr_inh32 = (IMAGE_NT_HEADERS32*)(*binary_buf + rtr_idh->e_lfanew);
 		IMAGE_SECTION_HEADER* rtr_ish32 = (IMAGE_SECTION_HEADER*)(*binary_buf + rtr_idh->e_lfanew + sizeof(rtr_inh32->Signature) + sizeof(rtr_inh32->FileHeader) + rtr_inh32->FileHeader.SizeOfOptionalHeader);
-		
-		
+
+		//printf("1\n");
+		//printf("number of section : %d\n", rtr_inh32->FileHeader.NumberOfSections);
 		for (int i = 0; i < rtr_inh32->FileHeader.NumberOfSections; i++, rtr_ish32++)
 		{
-			// rva 값이 현재 section의 max치 메모리 값 이상이거나 min치 메모리 값보다 작으면 진행하지 않고 for문으로 되돌아간다.
-			if (rva_value >= (rtr_ish32->VirtualAddress + rtr_ish32->Misc.VirtualSize) || rva_value < rtr_ish32->VirtualAddress)
+			//printf("2\n");
+			if ((rva_value >= (rtr_ish32->VirtualAddress + rtr_ish32->Misc.VirtualSize)) || (rva_value < rtr_ish32->VirtualAddress))
 			{
-				
+				//printf("3\n");
+				//printf("%s\n", rtr_ish32->Name);
+				//printf("rtr_ish32->VirtualAddress : %x\n", rtr_ish32->VirtualAddress);
+				//printf("rtr_ish32->VirtualAddress + rtr_ish32->Misc.VirtualSize: %X\n", rtr_ish32->VirtualAddress + rtr_ish32->Misc.VirtualSize);
+				//printf("rva_to_raw failed\n");
 				continue;
 			}
-			else
+			// rva_value의 값이 메모리에서의 해당 섹션의 max 크기보다 작고, 해당 섹션의 min 크기보다 크면
+			else //if ((rva_value < (rtr_ish32->VirtualAddress + rtr_ish32->Misc.VirtualSize)) && (rva_value > rtr_ish32->VirtualAddress))
 			{
-				raw = rva_value - rtr_ish32->VirtualAddress + rtr_ish32->PointerToRawData;
+				// RVA - VirtualAddress + PointerToRawData
+				//printf("4\n");
+				//printf("rtr_ish -> virtualaddress : %X\n", rtr_ish32->VirtualAddress);
+				//printf("rtr_ish -> PointerToRawData : %X\n", rtr_ish32->PointerToRawData);
+
+				//printf("raw : %X\n", rva_value - rtr_ish32->VirtualAddress + rtr_ish32->PointerToRawData);
+				printf("%s\n", rtr_ish32->Name);
+				//printf("rtr_ish32->VirtualAddress : %x\n", rtr_ish32->VirtualAddress);
+				//printf("rtr_ish32->VirtualAddress + rtr_ish32->Misc.VirtualSize: %X\n", rtr_ish32->VirtualAddress + rtr_ish32->Misc.VirtualSize);
+				//printf("rva_to_raw failed\n");
+				int raw = rva_value - rtr_ish32->VirtualAddress + rtr_ish32->PointerToRawData;
+				printf("raw value : %X\n", raw);
 				return raw;
 			}
-			
+
 		}
+		//printf("5\n");
 	}
 	else if (rtr_inh->FileHeader.Machine == 0x0200 || rtr_inh->FileHeader.Machine == 0x8664)
 	{
@@ -882,17 +858,23 @@ int rva_to_raw(FILE* fp, u_char** binary_buf, DWORD rva_value)
 
 		for (int i = 0; i < rtr_inh64->FileHeader.NumberOfSections; i++, rtr_ish64++)
 		{
-			// rva 값이 현재 section의 max치 메모리 값 이상이거나 min치 메모리 값보다 작으면 진행하지 않고 for문으로 되돌아간다.
-			if ((rva_value >= (rtr_ish64->VirtualAddress + rtr_ish64->Misc.VirtualSize)) && (rva_value < rtr_ish64->VirtualAddress))
+			if ((rva_value > (rtr_ish64->VirtualAddress + rtr_ish64->Misc.VirtualSize)) && (rva_value < rtr_ish64->VirtualAddress))
 			{
 				continue;
 			}
-			else
+			// rva_value의 값이 메모리에서의 해당 섹션의 max 크기보다 작고, 해당 섹션의 min 크기보다 크면
+			else //if ((rva_value < (rtr_ish64->VirtualAddress + rtr_ish64->Misc.VirtualSize)) && (rva_value > rtr_ish64->VirtualAddress))
 			{
-				raw = rva_value - rtr_ish64->VirtualAddress + rtr_ish64->PointerToRawData;
+				// RVA - VirtualAddress + PointerToRawData
+				//printf("rtr_ish -> virtualaddress : %X\n", rtr_ish64->VirtualAddress);
+				//printf("rtr_ish -> PointerToRawData : %X\n", rtr_ish64->PointerToRawData);
+
+				//printf("raw : %X\n", rva_value - rtr_ish64->VirtualAddress + rtr_ish64->PointerToRawData);
+
+				int raw = rva_value - rtr_ish64->VirtualAddress + rtr_ish64->PointerToRawData;
 				return raw;
 			}
-			
+
 		}
 	}
 	else
