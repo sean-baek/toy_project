@@ -26,16 +26,6 @@ int main(int argc, char** argv)
 	IMAGE_DOS_HEADER* idh = (IMAGE_DOS_HEADER*)buf;
 	IMAGE_NT_HEADERS* inh = (IMAGE_NT_HEADERS*)(buf + idh->e_lfanew);
 	IMAGE_SECTION_HEADER* ish = (IMAGE_SECTION_HEADER*)(buf + idh->e_lfanew + sizeof(inh->Signature) + sizeof(inh->FileHeader) + inh->FileHeader.SizeOfOptionalHeader);
-	
-	/*
-	DWORD val = inh->OptionalHeader.DataDirectory[1].VirtualAddress;
-	printf("val : %d, %X\n", val, val);
-
-	raw = rva_to_raw(file, &buf, val);
-	printf("raw : %d, %X\n", raw, raw);
-
-	IMAGE_IMPORT_DESCRIPTOR* iid = (IMAGE_IMPORT_DESCRIPTOR*)(buf + raw); // IID 구조체의 배열 시작 주소(RVA)를 가리킴
-	*/
 
 	// 64bit 환경에서의 프로그램일 때
 	if ((inh->FileHeader.Machine == 0x0200) || (inh->FileHeader.Machine == 0x8664))
@@ -116,51 +106,27 @@ int main(int argc, char** argv)
 
 		// IMAGE_IMPORT_DESCRIPTOR
 		printf("========== [IMAGE_IMPORT_DESCRIPTOR] ==========\n\n");
+		// IMAGE_IMPORT_DESCRIPTOR 구조체 배열의 시작 주소 RVA 값을 RAW로 변환
 		raw = rva_to_raw(file, &buf, inh32->OptionalHeader.DataDirectory[1].VirtualAddress);
 		printf("IMPORT Directory RAW : %X\n\n", raw);
+		// IMAGE_IMPORT_DESCRIPTOR 구조체 배열의 실제 주소를 지정
 		IMAGE_IMPORT_DESCRIPTOR* iid = (IMAGE_IMPORT_DESCRIPTOR*)(buf + raw);
+		// IID 구조체 배열의 크기
+		int import_descriptor_size = inh32->OptionalHeader.DataDirectory[1].Size;
 
 		fseek(file, raw, SEEK_SET);
 		offset = ftell(file);
 		
-	
+		print_image_import_descriptor(file, &buf, iid, import_descriptor_size);
+		printf("===============================================\n\n");
 
-		// offset 출력을 위한 section header 처음 부분 가리키기
-		fseek(file, raw, SEEK_SET);
-		//printf("IID structure raw : %X\n", ftell(file));
 
-		// IID 구조체 배열의 크기
-		int import_descriptor_size = inh32->OptionalHeader.DataDirectory[1].Size;
-		
-		for (int i = 0; i < import_descriptor_size; i++, iid++)
-		{
-			if (iid->Characteristics == 0x00000000 && iid->OriginalFirstThunk == 0x00000000 && iid->TimeDateStamp == 0x00000000 && iid->ForwarderChain == 0x00000000 && iid->Name == 0x00000000 && iid->FirstThunk == 0x00000000)
-				break;
-
-			printf("[%08X] : OriginalFirstThunk[%dbyte]\t: %08X(RVA), %08X(RAW)\n", offset, sizeof(iid->OriginalFirstThunk), iid->OriginalFirstThunk, rva_to_raw(file, &buf, iid->OriginalFirstThunk));
-			offset = get_file_offset(file, sizeof(iid->OriginalFirstThunk));
-			
-			printf("[%08X] : TimeDateStamp[%dbyte]\t: %08X(RVA), %08X(RAW)\n", offset, sizeof(iid->TimeDateStamp), iid->TimeDateStamp, rva_to_raw(file, &buf, iid->TimeDateStamp));
-			offset = get_file_offset(file, sizeof(iid->TimeDateStamp));
-			
-			printf("[%08X] : ForwarderChain[%dbyte]\t: %08X(RVA), %08X(RAW)\n", offset, sizeof(iid->ForwarderChain), iid->ForwarderChain, rva_to_raw(file, &buf, iid->ForwarderChain));
-			offset = get_file_offset(file, sizeof(iid->ForwarderChain));
-			
-			raw = rva_to_raw(file, &buf, iid->Name);
-			printf("[%08X] : Name[%dbyte]\t\t: %08X(RVA), %s\n", offset, sizeof(iid->Name), iid->Name ,buf+raw);
-			offset = get_file_offset(file, sizeof(iid->Name));
-			
-			printf("[%08X] : FirstThunk[%dbyte]\t\t: %08X(RVA), %08X(RAW)\n", offset, sizeof(iid->FirstThunk), iid->FirstThunk, rva_to_raw(file, &buf, iid->FirstThunk));
-			offset = get_file_offset(file, sizeof(iid->FirstThunk));
-
-			printf("\n===============================================\n\n");
-		}		
+		// INT
 	}
 	
 
 	free(buf);
 	fclose(file);
-
 	return 0;
 }
 
@@ -848,6 +814,7 @@ void print_inh64_datadirectory(FILE* fp, IMAGE_NT_HEADERS64* inh64)
 
 int rva_to_raw(FILE* fp, u_char** binary_buf, DWORD rva_value)
 {
+	//printf("rva value : %X\n", rva_value);
 	int raw;
 	IMAGE_DOS_HEADER* rtr_idh = (IMAGE_DOS_HEADER*)*binary_buf;
 	IMAGE_NT_HEADERS* rtr_inh = (IMAGE_NT_HEADERS*)(*binary_buf + rtr_idh->e_lfanew);
@@ -902,4 +869,75 @@ int rva_to_raw(FILE* fp, u_char** binary_buf, DWORD rva_value)
 	}
 
 	return 0;
+}
+
+void print_image_import_descriptor(FILE* fp, u_char** buf, IMAGE_IMPORT_DESCRIPTOR* iid, int size)
+{
+	IMAGE_IMPORT_DESCRIPTOR* piid = (IMAGE_IMPORT_DESCRIPTOR *)iid;
+	int raw = 0;
+	for (int i = 0; i < size; i++, piid++)
+	{
+		if (piid->Characteristics == 0x00000000 && piid->OriginalFirstThunk == 0x00000000 && piid->TimeDateStamp == 0x00000000 && piid->ForwarderChain == 0x00000000 && piid->Name == 0x00000000 && piid->FirstThunk == 0x00000000)
+			break;
+
+		printf("[%08X] : OriginalFirstThunk[%dbyte]\t: %08X(RVA), %08X(RAW)\n", offset, sizeof(piid->OriginalFirstThunk), piid->OriginalFirstThunk, rva_to_raw(fp, buf, piid->OriginalFirstThunk));
+		offset = get_file_offset(fp, sizeof(piid->OriginalFirstThunk));
+
+		printf("[%08X] : TimeDateStamp[%dbyte]\t: %08X(RVA), %08X(RAW)\n", offset, sizeof(piid->TimeDateStamp), piid->TimeDateStamp, rva_to_raw(fp, buf, piid->TimeDateStamp));
+		offset = get_file_offset(fp, sizeof(piid->TimeDateStamp));
+
+		printf("[%08X] : ForwarderChain[%dbyte]\t: %08X(RVA), %08X(RAW)\n", offset, sizeof(piid->ForwarderChain), piid->ForwarderChain, rva_to_raw(fp, buf, piid->ForwarderChain));
+		offset = get_file_offset(fp, sizeof(piid->ForwarderChain));
+
+		raw = rva_to_raw(fp, buf, piid->Name);
+		printf("[%08X] : Name[%dbyte]\t\t: %08X(RVA), %s\n", offset, sizeof(piid->Name), piid->Name, *buf + raw);
+		offset = get_file_offset(fp, sizeof(piid->Name));
+
+		printf("[%08X] : FirstThunk[%dbyte]\t\t: %08X(RVA), %08X(RAW)\n\n", offset, sizeof(piid->FirstThunk), piid->FirstThunk, rva_to_raw(fp, buf, piid->FirstThunk));
+		offset = get_file_offset(fp, sizeof(piid->FirstThunk));
+
+		printf("-----------------------------------------------\n");
+	}
+
+	// dll 라이브러리들 이름은 출력했으니 각 라이브러리의 함수들의 hint와 이름 출력
+	printf("\n-------------- (IMAGE NAME TABLE) --------------\n\n");
+	piid = (IMAGE_IMPORT_DESCRIPTOR*)iid;
+	for (int i = 0; i < size; i++, piid++)
+	{
+		if (piid->Characteristics == 0x00000000 && piid->OriginalFirstThunk == 0x00000000 && piid->TimeDateStamp == 0x00000000 && piid->ForwarderChain == 0x00000000 && piid->Name == 0x00000000 && piid->FirstThunk == 0x00000000)
+			break;
+
+		// IMPORT 함수가 어떤 dll 라이브러리에 속해있는지 확인하기 위해 라이브러리 이름 출력
+		offset = get_file_offset(fp, sizeof(piid->ForwarderChain));
+		raw = rva_to_raw(fp, buf, piid->Name);
+		printf("\n[%08X] [***** %s *****]\n", offset, *buf + raw);
+
+		// IMAGE IMPORT Descriptor 구조체의 OriginalFirstThunk 구조체에 있는 값(RVA)은 IMAGE_THUNK_DATA의 멤버 변수의 값이다.
+		raw = rva_to_raw(fp, buf, piid->OriginalFirstThunk);
+		IMAGE_THUNK_DATA32* itd_oft32 = (IMAGE_THUNK_DATA32*)(*buf + raw);
+		
+		raw = rva_to_raw(fp, buf, piid->FirstThunk);
+		IMAGE_THUNK_DATA32* itd_ft32 = (IMAGE_THUNK_DATA32*)(*buf + raw);
+
+		// IMAGE THUNK DATA 구조체의 마지막은 0x00000000 값이다.
+		// 해당 값이 아닐 동안 반복하여 dll 라이브러리 속 함수들 출력
+		for ( ;itd_oft32->u1.AddressOfData != 0x00000000; itd_oft32++, itd_ft32++)
+		{
+			raw = rva_to_raw(fp, buf, itd_oft32->u1.AddressOfData);
+			IMAGE_IMPORT_BY_NAME* iibn32 = (IMAGE_IMPORT_BY_NAME*)(*buf + raw);
+
+			fseek(fp, raw, SEEK_SET);
+			printf("[%08X] iibn32->Hint : %X\n", ftell(fp), iibn32->Hint);
+
+			offset = get_file_offset(fp, sizeof(iibn32->Hint));
+			printf("[%08X] iibn32->Name : %s()\n", offset, iibn32->Name);
+
+			fseek(fp, rva_to_raw(fp, buf, piid->FirstThunk), SEEK_SET);
+			offset = ftell(fp);
+			printf("[%08X] IAT : %X(RVA), %X(RAW)\n\n", offset, itd_ft32->u1.Function, rva_to_raw(fp, buf, itd_ft32->u1.Function));
+		}
+
+		printf("\n");
+	}
+	printf("-----------------------------------------------\n");
 }
