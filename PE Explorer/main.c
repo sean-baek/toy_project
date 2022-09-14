@@ -24,17 +24,19 @@ int main(int argc, char** argv)
 	// 반환값은 파일의 사이즈이다.
 	file_size = get_file_content(file, &buf);
 	
-	
-
-	// dos header
+	/* dos header */
 	IMAGE_DOS_HEADER* idh = (IMAGE_DOS_HEADER*)buf;
-	// dos header->e_lfanew : NT header 구조체의 시작 offset 값
+
+	/* dos header->e_lfanew : NT header 구조체의 시작 offset 값 */
 	IMAGE_NT_HEADERS* inh = (IMAGE_NT_HEADERS*)(buf + idh->e_lfanew);
-	// FILE HEADER : NT header 구조체의 시작 부분에서 + 4byte한 offset
+
+	/* FILE HEADER : NT header 구조체의 시작 부분에서 + 4byte한 offset */
 	//IMAGE_FILE_HEADER* ifh = (IMAGE_FILE_HEADER*)(buf + idh->e_lfanew + inh->Signature);
-	// OPTIONAL header : NT header 구조체의 시작 부분 + 4byte + file header 크기 한 offset
-	///IMAGE_OPTIONAL_HEADER* ioh = (IMAGE_OPTIONAL_HEADER*)(buf + idh->e_lfanew + inh->Signature + sizeof(inh->FileHeader));
-	// Section header : NT header 구조체의 시작 부분 + 4byte + file header 크기 + sizeofOptionalheader의 값 한 offset
+
+	/* OPTIONAL header : NT header 구조체의 시작 부분 + 4byte + file header 크기 한 offset */
+	//IMAGE_OPTIONAL_HEADER* ioh = (IMAGE_OPTIONAL_HEADER*)(buf + idh->e_lfanew + inh->Signature + sizeof(inh->FileHeader));
+	
+	/* Section header : NT header 구조체의 시작 부분 + 4byte + file header 크기 + sizeofOptionalheader의 값 한 offset */
 	IMAGE_SECTION_HEADER* ish = (IMAGE_SECTION_HEADER*)(buf + idh->e_lfanew + sizeof(inh->Signature) + sizeof(inh->FileHeader) + inh->FileHeader.SizeOfOptionalHeader);
 	
 
@@ -56,13 +58,13 @@ int main(int argc, char** argv)
 		printf("\n32bit Program\n\n");
 		
 		// 파일의 크기가 몇인지 출력
-		printf("File Size : %dbyte\n\n", file_size);
+		printf("File Size : %d byte\n\n", file_size);
 		
 		/* dos header */
 		print_dos_header(file, idh);
 
 		// 파일 포인터를 NT header 위치로 이동
-		offset = set_file_offset(file, idh->e_lfanew);
+		//offset = set_file_offset(file, idh->e_lfanew);
 		/* 32bit용 NT Header */
 		print_nt_header32(file, idh, inh32);
 
@@ -77,7 +79,7 @@ int main(int argc, char** argv)
 		/* IMAGE_IMPORT_DESCRIPTOR */
 		printf("========== [IMAGE_IMPORT_DESCRIPTOR] ==========\n\n");
 		// IMAGE_IMPORT_DESCRIPTOR 구조체 배열의 시작 주소 RVA 값을 RAW로 변환
-		raw = rva_to_raw32(file, &buf, inh32->OptionalHeader.DataDirectory[1].VirtualAddress);
+		raw = rva_to_raw_dword(file, &buf, inh32->OptionalHeader.DataDirectory[1].VirtualAddress);
 		// IMPORT Directory 파일에서의 주소
 		printf("IMPORT Directory RAW : %X\n\n", raw);
 		// IMAGE_IMPORT_DESCRIPTOR 구조체 배열의 실제 주소를 지정
@@ -97,17 +99,20 @@ int main(int argc, char** argv)
 
 		printf("\n64bit Program\n\n");
 
+
 		// 파일의 크기가 몇인지 출력
-		printf("File Size : %dbyte\n\n", file_size);
+		printf("File Size : %d byte\n\n", file_size);
+
 
 		/* dos header */
 		print_dos_header(file, idh);
 
+
 		// 파일 포인터를 NT header 위치로 이동
-		fseek(file, idh->e_lfanew, SEEK_SET);
-		offset = ftell(file);
+		//offset = set_file_offset(file, idh->e_lfanew);
 		/*64bit용 NT Header*/
 		print_nt_header64(file, idh, inh64);
+
 
 		// 파일 포인터를 Section header 위치로 이동
 		offset = set_file_offset(file, idh->e_lfanew + sizeof(inh64->Signature) + sizeof(inh64->FileHeader) + inh64->FileHeader.SizeOfOptionalHeader);
@@ -116,29 +121,27 @@ int main(int argc, char** argv)
 		/* Section header */
 		print_section_header(file, ish, section_num);
 
+
 		/* IMAGE_IMPORT_DESCRIPTOR */
-		printf("========== [IMAGE_IMPORT_DESCRIPTOR] ==========\n\n");
+		printf("==================== [IMAGE_IMPORT_DESCRIPTOR] ====================\n\n");
 		// IMAGE_IMPORT_DESCRIPTOR 구조체 배열의 시작 주소 RVA 값을 RAW로 변환
-		raw = rva_to_raw64(file, &buf, inh64->OptionalHeader.DataDirectory[1].VirtualAddress);
+
+		raw = rva_to_raw_dword(file, &buf, inh64->OptionalHeader.DataDirectory[1].VirtualAddress);
 		printf("IMPORT Directory RAW : %X\n\n", raw);
+
 		// IMAGE_IMPORT_DESCRIPTOR 구조체 배열의 실제 주소를 지정
 		IMAGE_IMPORT_DESCRIPTOR* iid = (IMAGE_IMPORT_DESCRIPTOR*)(buf + raw);
+
 		// IID 구조체 배열의 크기
 		int import_descriptor_size = inh64->OptionalHeader.DataDirectory[1].Size / sizeof(IMAGE_DATA_DIRECTORY);
+
 		// IID 구조체 값 출력
 		offset = set_file_offset(file, raw);
 		print_image_import_descriptor(file, &buf, iid, import_descriptor_size);
-		printf("===============================================\n\n");
+		printf("===================================================================\n\n");
 	}
-
-
-
-
 
 	free(buf);
 	fclose(file);
 	return 0;
-
-	
-	
 }

@@ -1,6 +1,6 @@
 #include "header.h"
 
-int rva_to_raw32(FILE* fp, u_char** binary_buf, DWORD rva_value)
+int rva_to_raw_dword(FILE* fp, u_char** binary_buf, DWORD rva_value)
 {
 	int raw;
 	IMAGE_DOS_HEADER* rtr_idh = (IMAGE_DOS_HEADER*)*binary_buf;
@@ -22,7 +22,7 @@ int rva_to_raw32(FILE* fp, u_char** binary_buf, DWORD rva_value)
 	return -1;
 }
 
-ULONGLONG rva_to_raw64(FILE* fp, u_char** binary_buf, ULONGLONG rva_value)
+ULONGLONG rva_to_raw_ulonglong(FILE* fp, u_char** binary_buf, ULONGLONG rva_value)
 {
 	ULONGLONG raw;
 	IMAGE_DOS_HEADER* rtr_idh = (IMAGE_DOS_HEADER*)*binary_buf;

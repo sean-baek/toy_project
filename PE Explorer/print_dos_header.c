@@ -3,11 +3,9 @@
 void print_dos_header(FILE* fp, IMAGE_DOS_HEADER* idh)
 {
 
-	printf("========== [Dos Header] ==========\n");
-	// 파일의 처음으로 이동하여
-	fseek(fp, 0, SEEK_SET);
-	// offset 가져오기
-	offset = ftell(fp);
+	printf("=============== [Dos Header] ===============\n\n");
+	// 파일의 처음으로 이동하여 offset 가져오기
+	offset = set_file_offset(fp, 0);
 	printf("[%08X] - e_magic[%dbyte]\t:%04X\n", offset, sizeof(idh->e_magic), idh->e_magic);
 	
 	offset = get_file_offset(fp, sizeof(idh->e_magic));
@@ -70,5 +68,5 @@ void print_dos_header(FILE* fp, IMAGE_DOS_HEADER* idh)
 
 	offset = get_file_offset(fp, sizeof(idh->e_lfanew));
 
-	printf("==================================\n\n");
+	printf("\n============================================\n\n");
 }

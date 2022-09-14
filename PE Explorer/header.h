@@ -30,5 +30,5 @@ void print_image_import_descriptor(FILE* fp, u_char** buf, IMAGE_IMPORT_DESCRIPT
 //void print_iid_name_of_func(FILE* fp);
 
 int rva_to_raw(FILE* fp, u_char** binary_buf, DWORD rva_value);
-int rva_to_raw32(FILE* fp, u_char** binary_buf, DWORD rva_value);
-ULONGLONG rva_to_raw64(FILE* fp, u_char** binary_buf, ULONGLONG rva_value);
+int rva_to_raw_dword(FILE* fp, u_char** binary_buf, DWORD rva_value);
+ULONGLONG rva_to_raw_ulonglong(FILE* fp, u_char** binary_buf, ULONGLONG rva_value);

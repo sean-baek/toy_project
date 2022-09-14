@@ -40,4 +40,5 @@ void print_section_header(FILE* fp, IMAGE_SECTION_HEADER* ish, WORD section_num)
 
 		printf("----------------------------------------\n\n");
 	}
+	printf("=======================================\n\n");
 }

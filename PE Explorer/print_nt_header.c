@@ -2,12 +2,14 @@
 
 void print_nt_header32(FILE* fp, IMAGE_DOS_HEADER* idh, IMAGE_NT_HEADERS32* inh32)
 {
+	// 파일 포인터를 NT header 위치로 이동
+	offset = set_file_offset(fp, idh->e_lfanew);
 
-	printf("========== [NT Header 32] ==========\n\n");
+	printf("=============== [NT Header 32] ===============\n\n");
 	printf("[%08X] - Signature[%dbyte]\t\t\t:%08X\n\n", offset, sizeof(inh32->Signature), inh32->Signature);
 	offset = get_file_offset(fp, sizeof(inh32->Signature));
 
-	printf("---------- (FileHeader) ----------\n");
+	printf("-------------------- (FileHeader) --------------------\n");
 	printf("[%08X] - Machine[%dbyte]\t\t\t:%04X\n", offset, sizeof(inh32->FileHeader.Machine), inh32->FileHeader.Machine);
 	offset = get_file_offset(fp, sizeof(inh32->FileHeader.Machine));
 
@@ -28,9 +30,9 @@ void print_nt_header32(FILE* fp, IMAGE_DOS_HEADER* idh, IMAGE_NT_HEADERS32* inh3
 
 	printf("[%08X] - Characteristics[%dbyte]\t\t:%04X\n", offset, sizeof(inh32->FileHeader.Characteristics), inh32->FileHeader.Characteristics);
 	offset = get_file_offset(fp, sizeof(inh32->FileHeader.Characteristics));
-	printf("----------------------------------\n\n");
+	printf("------------------------------------------------------\n\n");
 
-	printf("---------- (OptionalHeader32) ----------\n");
+	printf("--------------- (OptionalHeader 32) ---------------\n");
 	printf("[%08X] - Magic[%dbyte]\t\t\t:%04X\n", offset, sizeof(inh32->OptionalHeader.Magic), inh32->OptionalHeader.Magic);
 	offset = get_file_offset(fp, sizeof(inh32->OptionalHeader.Magic));
 
@@ -131,18 +133,21 @@ void print_nt_header32(FILE* fp, IMAGE_DOS_HEADER* idh, IMAGE_NT_HEADERS32* inh3
 	print_inh32_datadirectory(fp, inh32);
 
 
-	printf("----------------------------------------\n");
-	printf("========================================\n\n");
+	printf("--------------------------------------------------\n\n");
+	printf("==================================================\n\n");
 }
 
 
 void print_nt_header64(FILE* fp, IMAGE_DOS_HEADER* idh, IMAGE_NT_HEADERS64* inh64)
 {
-	printf("========== [NT Header 64] ==========\n\n");
+	// 파일 포인터를 NT header 위치로 이동
+	offset = set_file_offset(fp, idh->e_lfanew);
+
+	printf("=============== [NT Header 64] ===============\n\n");
 	printf("[%08X] - Signature[%dbyte]\t\t\t:%08X\n\n", offset, sizeof(inh64->Signature), inh64->Signature);
 	offset = get_file_offset(fp, sizeof(inh64->Signature));
 
-	printf("---------- (FileHeader) ----------\n");
+	printf("-------------------- (FileHeader) --------------------\n");
 	printf("[%08X] - Machine[%dbyte]\t\t\t:%04X\n", offset, sizeof(inh64->FileHeader.Machine), inh64->FileHeader.Machine);
 	offset = get_file_offset(fp, sizeof(inh64->FileHeader.Machine));
 
@@ -163,9 +168,9 @@ void print_nt_header64(FILE* fp, IMAGE_DOS_HEADER* idh, IMAGE_NT_HEADERS64* inh6
 
 	printf("[%08X] - Characteristics[%dbyte]\t\t:%04X\n", offset, sizeof(inh64->FileHeader.Characteristics), inh64->FileHeader.Characteristics);
 	offset = get_file_offset(fp, sizeof(inh64->FileHeader.Characteristics));
-	printf("------------------------------------\n\n");
+	printf("--------------------------------------------------------\n\n");
 
-	printf("---------- (OptionalHeader64) ----------\n");
+	printf("--------------- (OptionalHeader 64) ---------------\n");
 	printf("[%08X] - Magic[%dbyte]\t\t\t:%04X\n", offset, sizeof(inh64->OptionalHeader.Magic), inh64->OptionalHeader.Magic);
 	offset = get_file_offset(fp, sizeof(inh64->OptionalHeader.Magic));
 
@@ -263,6 +268,6 @@ void print_nt_header64(FILE* fp, IMAGE_DOS_HEADER* idh, IMAGE_NT_HEADERS64* inh6
 	*/
 
 	print_inh64_datadirectory(fp, inh64);
-	printf("------------------------------------\n");
-	printf("====================================\n\n");
+	printf("----------------------------------------------\n\n");
+	printf("==============================================\n\n");
 }
