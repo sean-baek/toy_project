@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 	// 파일의 크기를 구하고 내용을 읽는다.
 	// 반환값은 파일의 사이즈이다.
 	file_size = get_file_content(file, &buf);
-	
+
 	/* dos header */
 	IMAGE_DOS_HEADER* idh = (IMAGE_DOS_HEADER*)buf;
 
@@ -51,10 +51,11 @@ int main(int argc, char** argv)
 
 
 	// 32bit 프로그램일 때
-	if (inh->FileHeader.Machine == IMAGE_FILE_MACHINE_I386 || inh->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+	//if (inh->FileHeader.Machine == IMAGE_FILE_MACHINE_I386 || inh->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+	if (inh->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
 	{
 		IMAGE_NT_HEADERS32* inh32 = (IMAGE_NT_HEADERS32*)(buf + idh->e_lfanew);
-		
+
 		printf("\n32bit Program\n\n");
 		
 		// 파일의 크기가 몇인지 출력
@@ -66,6 +67,7 @@ int main(int argc, char** argv)
 		// 파일 포인터를 NT header 위치로 이동
 		//offset = set_file_offset(file, idh->e_lfanew);
 		/* 32bit용 NT Header */
+
 		print_nt_header32(file, idh, inh32);
 
 
@@ -81,19 +83,35 @@ int main(int argc, char** argv)
 		// IMAGE_IMPORT_DESCRIPTOR 구조체 배열의 시작 주소 RVA 값을 RAW로 변환
 		raw = rva_to_raw_dword(file, &buf, inh32->OptionalHeader.DataDirectory[1].VirtualAddress);
 		// IMPORT Directory 파일에서의 주소
-		printf("IMPORT Directory RAW : %X\n\n", raw);
+		printf("IMPORT DESCRIPTOR RAW : %X\n\n", raw);
 		// IMAGE_IMPORT_DESCRIPTOR 구조체 배열의 실제 주소를 지정
 		IMAGE_IMPORT_DESCRIPTOR* iid = (IMAGE_IMPORT_DESCRIPTOR*)(buf + raw);
 		// IID 구조체 배열의 크기
-		int import_descriptor_size = inh32->OptionalHeader.DataDirectory[1].Size / sizeof(IMAGE_DATA_DIRECTORY);
+		int import_descriptor_size = inh32->OptionalHeader.DataDirectory[1].Size / sizeof(IMAGE_IMPORT_DESCRIPTOR);
 		// IID 구조체 값 출력
 		offset = set_file_offset(file, raw);
 		print_image_import_descriptor(file, &buf, iid, import_descriptor_size);
 		printf("===============================================\n\n");
 
+
+		/* IMAGE_EXPORT_DERECTORY */
+		printf("========== [IMAGE_EXPORT_DIRECTORY] ==========\n\n");
+		// EXPORT directory의 유무 확인
+		if (inh32->OptionalHeader.DataDirectory[0].VirtualAddress == 0x00000000)
+			printf("EXPORT DIRECTORY가 존재하지 않습니다. ");
+		else
+		{
+			raw = rva_to_raw_dword(file, &buf, inh32->OptionalHeader.DataDirectory[0].VirtualAddress);
+			printf("EXPORT Directory RAW : %X\n", raw);
+
+			IMAGE_EXPORT_DIRECTORY* ied = (IMAGE_EXPORT_DIRECTORY*)(buf + raw);
+			int export_directory_size = inh32->OptionalHeader.DataDirectory[0].Size / sizeof(IMAGE_EXPORT_DIRECTORY);
+			print_image_export_directory(file, &buf, ied, export_directory_size);
+		}
 	}
 	// 64bit 프로그램일 때
-	else if (inh->FileHeader.Machine == IMAGE_FILE_MACHINE_AMD64 || inh->OptionalHeader.Magic == IMAGE_FILE_MACHINE_IA64 || inh->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+	//else if (inh->FileHeader.Machine == IMAGE_FILE_MACHINE_AMD64 || inh->OptionalHeader.Magic == IMAGE_FILE_MACHINE_IA64 || inh->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+	else if (inh->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
 	{
 		IMAGE_NT_HEADERS64* inh64 = (IMAGE_NT_HEADERS64*)(buf + idh->e_lfanew);
 
@@ -125,20 +143,32 @@ int main(int argc, char** argv)
 		/* IMAGE_IMPORT_DESCRIPTOR */
 		printf("==================== [IMAGE_IMPORT_DESCRIPTOR] ====================\n\n");
 		// IMAGE_IMPORT_DESCRIPTOR 구조체 배열의 시작 주소 RVA 값을 RAW로 변환
-
 		raw = rva_to_raw_dword(file, &buf, inh64->OptionalHeader.DataDirectory[1].VirtualAddress);
 		printf("IMPORT Directory RAW : %X\n\n", raw);
-
 		// IMAGE_IMPORT_DESCRIPTOR 구조체 배열의 실제 주소를 지정
 		IMAGE_IMPORT_DESCRIPTOR* iid = (IMAGE_IMPORT_DESCRIPTOR*)(buf + raw);
-
 		// IID 구조체 배열의 크기
 		int import_descriptor_size = inh64->OptionalHeader.DataDirectory[1].Size / sizeof(IMAGE_DATA_DIRECTORY);
-
 		// IID 구조체 값 출력
 		offset = set_file_offset(file, raw);
 		print_image_import_descriptor(file, &buf, iid, import_descriptor_size);
 		printf("===================================================================\n\n");
+
+
+		/* IMAGE_EXPORT_DERECTORY */
+		printf("========== [IMAGE_EXPORT_DIRECTORY] ==========\n\n");
+		// EXPORT directory의 유무 확인
+		if (inh64->OptionalHeader.DataDirectory[0].VirtualAddress == 0x00000000)
+			printf("EXPORT DIRECTORY가 존재하지 않습니다.\n");
+		else
+		{
+			raw = rva_to_raw_dword(file, &buf, inh64->OptionalHeader.DataDirectory[0].VirtualAddress);
+			printf("EXPORT Directory RAW : %X\n", raw);
+
+			IMAGE_EXPORT_DIRECTORY* ied = (IMAGE_EXPORT_DIRECTORY*)(buf + raw);
+			//int export_directory_size = inh64->OptionalHeader.DataDirectory[0].Size / sizeof(IMAGE_EXPORT_DIRECTORY);
+			print_image_export_directory(file, &buf, ied);
+		}
 	}
 
 	free(buf);

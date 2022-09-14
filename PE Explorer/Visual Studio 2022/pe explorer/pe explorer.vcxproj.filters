@@ -30,7 +30,7 @@
     <ClCompile Include="print_dos_header.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="print_image_import_descriptor.c">
+    <ClCompile Include="print_iid.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="print_image_nt_header_datadirectory.c">
@@ -46,6 +46,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="set_file_offset.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="print_ied.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

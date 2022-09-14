@@ -132,7 +132,8 @@
     <ClCompile Include="get_file_size.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="print_dos_header.c" />
-    <ClCompile Include="print_image_import_descriptor.c" />
+    <ClCompile Include="print_ied.c" />
+    <ClCompile Include="print_iid.c" />
     <ClCompile Include="print_image_nt_header_datadirectory.c" />
     <ClCompile Include="print_nt_header.c" />
     <ClCompile Include="print_section_header.c" />
