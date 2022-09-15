@@ -69,16 +69,15 @@ RAW : RVA - VirtualAddress + PointerToRawData
 ---
 
 # images
-<img src="./images/1.jpg" width="450%" height="300px" title="start" alt="start"></img></br>
-![Alt text](PE Explorer/images/1.jpg)
-![Alt text](/images/dos_header.jpg)
-![Alt nt_header_file_header](/images/nt_header_file_header.jpg)
-![Alt nt_header_optional_header1](/images/nt_header_optional_header_1.jpg)
-![Alt nt_header_optional_header2](/images/nt_header_optional_header_2.jpg)
-![Alt section_header](/images/section_header.jpg)
-![Alt image_import_descriptor](/images/iid.jpg)
-![Alt int_eat](/images/int_iat.jpg)
-![Alt eat1](/images/eat_1.jpg)
-![Alt eat2](/images/eat_2.jpg)
+![Alt text](./images/1.jpg)
+![Alt text](./images/dos_header.jpg)
+![Alt nt_header_file_header](./images/nt_header_file_header.jpg)
+![Alt nt_header_optional_header1](./images/nt_header_optional_header_1.jpg)
+![Alt nt_header_optional_header2](./images/nt_header_optional_header_2.jpg)
+![Alt section_header](./images/section_header.jpg)
+![Alt image_import_descriptor](./images/iid.jpg)
+![Alt int_eat](./images/int_iat.jpg)
+![Alt eat1](./images/eat_1.jpg)
+![Alt eat2](./images/eat_2.jpg)
 
 ---
