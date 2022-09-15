@@ -69,7 +69,7 @@ RAW : RVA - VirtualAddress + PointerToRawData
 ---
 
 # images
-<img src="/PE\ Explorer/images/1.jpg" width="450%" height="300px" title="start" alt="start"></img></br>
+<img src="./images/1.jpg" width="450%" height="300px" title="start" alt="start"></img></br>
 ![Alt text](PE Explorer/images/1.jpg)
 ![Alt text](/images/dos_header.jpg)
 ![Alt nt_header_file_header](/images/nt_header_file_header.jpg)
