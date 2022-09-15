@@ -69,8 +69,8 @@ RAW : RVA - VirtualAddress + PointerToRawData
 ---
 
 # images
-![Alt text](./images/1.jpg)
-![Alt text](./images/dos_header.jpg)
+![Alt start](./images/1.jpg)
+![Alt dos_header](./images/dos_header.jpg)
 ![Alt nt_header_file_header](./images/nt_header_file_header.jpg)
 ![Alt nt_header_optional_header1](./images/nt_header_optional_header_1.jpg)
 ![Alt nt_header_optional_header2](./images/nt_header_optional_header_2.jpg)
