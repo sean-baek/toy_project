@@ -1,6 +1,6 @@
 # ISSUE
 - EAT 부분이 불완전하다.
-    -> KERNEL32.dll을 인자로 줬을 때 EAT를 다 출력하지 못한다.
+    kernel32.dll 파일로 테스트 했을 때 kernel32.dll의 EXPORT 함수들을 출력하다가 ntdll이나 kernelbase dll의 함수들이 섞여 있는데 이들을 만나게 되면 function RVA의 값이 하나씩 당겨진다.
 
 ---
 
