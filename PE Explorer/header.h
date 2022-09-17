@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-//#include <stdint.h>
+#include <stdint.h>
 #include <errno.h>
 #include <ctype.h>
 #include <Windows.h>

@@ -1,6 +1,6 @@
 # ISSUE
-- EAT 부분이 불완전하다.
-    kernel32.dll 파일로 테스트 했을 때 kernel32.dll의 EXPORT 함수들을 출력하다가 ntdll이나 kernelbase dll의 함수들이 섞여 있는데 이들을 만나게 되면 function RVA의 값이 하나씩 당겨진다.
+    - rva_to_raw 함수의 3번째 인자가 기본적으로 DWORD이지만 IAT 부분에서 ULONGLONG으로 받아야 할 때가 있어서
+    rva_to_raw_dword와 rva_to_raw_ulonglong 함수로 나눠서 사용하지만 3번째 인자를 void형 pointer로 받아 사용할 수 있지 않을까 한다.
 
 ---
 
@@ -68,16 +68,47 @@ RAW : RVA - VirtualAddress + PointerToRawData
 
 ---
 
+# EAT 부분 알고리즘
+
+    1. EXPORT 함수 이름들이 적힌 RAW 주소 부분을 구한다.
+    (EXPORT하는 라이브러리 이름 뒤에부터가 시작 부분이다.)
+
+    2. IMAGE_EXPORT_DIRECTORY 구조체에서 AddressOfNames의 값(RVA)을 RAW로 바꾸고 해당 RAW 위치로 가보면
+    4byte RVA 값들이 배열되어 있는데 해당 RVA 값들을 RAW로 바꾼 값에 위치한 문자열과
+    1번에서 구한 RAW 주소에 위치한 문자열을 strcmp로 비교하여 맞을 때까지 반복문을 돌려 name_index를 가져온다.
+
+    3. name_index를 성공적으로 가져왔다면 IMAGE_EXPORT_DIRECTORY 구조체에서 AddressOfNameOrdinals의 값(RVA)을
+    RAW로 바꾸고 해당 위치로부터 name_index * 2 만큼 떨어진 위치에 있는 값인 ordinal을 구한다.
+    (즉, AddfressOfNameOrdinals[name_index])
+    
+    4. ordinal을 성공적으로 가져왔다면 IMAGE_EXPORT_DIRECTORY 구조체에서 AddressOfFunctions의 값(RVA)을
+    RAW로 바꾸고 해당 위치로부터 ordinal * 4 만큼 떨어진 위치에 있는 값인 EXPORT 함수의 주소(RVA)를 구한다.
+
+    5. EXPORT 함수의 주소(RVA)를 구했다면 반복문으로 AddressOfFunctions의 주소(RAW)부터 4byte씩 이동하며 값을 읽어 EXPORT 함수의 주소(RVA)와 일치한지 검사하는 방법으로 Function index를 구한다.
+
+    6. 구한 값들 name_index, name_ordinal, name RVA, name RAW, Function_index, Function_RVA을 출력한다.
+
+---
+
 # images
 ![Alt start](./images/1.jpg)
+
 ![Alt dos_header](./images/dos_header.jpg)
+
 ![Alt nt_header_file_header](./images/nt_header_file_header.jpg)
+
 ![Alt nt_header_optional_header1](./images/nt_header_optional_header_1.jpg)
+
 ![Alt nt_header_optional_header2](./images/nt_header_optional_header_2.jpg)
+
 ![Alt section_header](./images/section_header.jpg)
+
 ![Alt image_import_descriptor](./images/iid.jpg)
+
 ![Alt int_eat](./images/int_iat.jpg)
+
 ![Alt eat1](./images/eat_1.jpg)
+
 ![Alt eat2](./images/eat_2.jpg)
 
 ---

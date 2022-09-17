@@ -2,9 +2,7 @@
 
 void print_image_export_directory(FILE* fp, u_char** buf, IMAGE_EXPORT_DIRECTORY* ied)
 {
-	int raw = 0, found_str = 0, num_of_names = 0, num_of_functions = 0;
-	WORD ordinal = 0;
-	DWORD eat_rva = 0, n_index = 0, f_index = 0;
+	int raw = 0, num_of_names = 0, num_of_functions = 0;
 	IMAGE_EXPORT_DIRECTORY* pied = (IMAGE_EXPORT_DIRECTORY*)ied;
 
 	// EXPORT dll 출력
@@ -52,9 +50,7 @@ void print_image_export_directory(FILE* fp, u_char** buf, IMAGE_EXPORT_DIRECTORY
 	// EXPORT 함수 이름들 실제 RAW 위치
 	raw = rva_to_raw_dword(fp, buf, pied->Name);
 	char* offset_export_func_names = (char*)(*buf + raw + (strlen(*buf + raw) + 1));
-	
-	//printf("%s\n", offset_export_func_names);
-	
+		
 
 	// 이름 배열의 주소(이름 배열에 있는 각 4byte RVA 값들을 가리키기 위해)
 	raw = rva_to_raw_dword(fp, buf, pied->AddressOfNames);
@@ -70,71 +66,66 @@ void print_image_export_directory(FILE* fp, u_char** buf, IMAGE_EXPORT_DIRECTORY
 
 	printf("number of names : %d\n\n", num_of_names);
 
-
 	// Export 함수 이름 배열(RAW)의 주소를 백업하여 사용
 	char* p_offset_export_func_names = offset_export_func_names;
 
 	// EXPORT 함수들 정보 출력
 	for (int i = 0; i < num_of_names; i++, p_offset_export_func_names += (strlen(p_offset_export_func_names) + 1))
 	{
-		// raw = rva_to_raw_dword(fp, buf, *pnames);
+		short ordinal = -1;
+		DWORD eat_rva = 0, n_index = -1, f_index = -1;
 		DWORD* ppnames = pnames;
 		DWORD* ppfunctions = pfunctions;
-		// EXPORT 함수 이름
-		//printf("p_offset_export_func_names : %s\n", p_offset_export_func_names);
-
-		// Export 함수 이름 배열(RAW)의 주소를 백업하여 사용
-		//char* p_offset_export_func_names = offset_export_func_names;
-		//printf("*p_offset_export_func_names : %s\n", p_offset_export_func_names);
-		//printf("*p_offset_export_func_names : %s\n", p_offset_export_func_names+20);
-
+		
 		for (int j = 0; j < num_of_names; j++, ppnames++)
 		{
 			// VirtualOfNames RAW 주소에 있는 RVA 값들을 raw로 변환하여 해당 위치에 있는 문자열이
 			// EXPORT 함수들의 이름 배열(RAW)에 있는 문자열과 일치한지 검사
 			raw = rva_to_raw_dword(fp, buf, *ppnames);
-			if (strstr(p_offset_export_func_names, "NTDLL.") != NULL || strstr(p_offset_export_func_names, "kernelbase.") != NULL)
-			{
-				break;
-			}
 			if (!strcmp(p_offset_export_func_names, *buf + raw))
 			{
 				n_index = j;
 				break;
 			}
 		}		
-
-		if (strstr(p_offset_export_func_names, "NTDLL.") != NULL || strstr(p_offset_export_func_names, "kernelbase.") != NULL)
-		{
-			continue;
-		}
-		printf("count : %d\n\n", i+1);
-
-		printf("name index : %d\n", n_index);
 		
 		// EXPORT 함수 이름에 해당하는 ordinal
 		// n_index = name_index, 
-		ordinal = *(pordinals + n_index);
-		printf("ordinal : %X\n", ordinal);
+		if (n_index != -1)
+		{
+			ordinal = *(pordinals + n_index);
+			printf("count : %d\n\n", i + 1);
+			//printf("ordinal : %X\n", ordinal);
+		}
 
 		// EXPORT 함수 주소 배열에서 + ordinal한 위치에 해당하는 값
-		eat_rva = *(ppfunctions + ordinal);
-		printf("eat _ rva : %X\n", eat_rva);
+		if (ordinal != -1)
+		{
+			eat_rva = *(ppfunctions + ordinal);
+			//printf("eat_rva : %X\n", eat_rva);
+		}
+		
 
 		// function ordinal 구하기
-		for (int k = 0; k < num_of_functions; k++, ppfunctions++)
+		if (eat_rva != 0)
 		{
-			if (eat_rva == *ppfunctions)
+			for (int k = 0; k < num_of_functions; k++, ppfunctions++)
 			{
-				f_index = (k+1);
-				break;
+				if (eat_rva == *ppfunctions)
+				{
+					f_index = (k + 1);
+					break;
+				}
 			}
 		}
 		
-		printf("%s\n%04X(Name Ordinal), %08X(Name RVA), %08X(Name RAW), %08X(Function Ordinal), %08X(Function RVA)\n\n", p_offset_export_func_names, ordinal, *ppnames, raw, f_index, eat_rva);
-		printf("-------------------------------------------------\n\n");
-
-		//system("pause");
+		if (eat_rva != 0)
+		{
+			printf("%s\n%d(Name Index), %04X(Name Ordinal), %08X(Name RVA), %08X(Name RAW), %08X(Function Ordinal), %08X(Function RVA)\n\n", p_offset_export_func_names, n_index, ordinal, *ppnames, raw, f_index, eat_rva);
+			printf("-------------------------------------------------\n\n");
+		}
+		
+		system("pause");
 	}
 
 
